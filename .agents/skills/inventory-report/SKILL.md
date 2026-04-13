@@ -16,9 +16,10 @@ This skill helps you query the Power Platform inventory API and produce structur
 
 ## Workflow
 
-1. **Query inventory data** using the Power Platform inventory API via `pac` CLI or direct REST calls
-2. **Shape the results** into a structured dataset (JSON)
-3. **Invoke the frontend-design skill** to create a visually striking, self-contained HTML report from the data
+1. **Collect tenant governance data** using Power Platform CLI (`pac admin list-tenant-settings`, `pac admin dlp-policy list/show`)
+2. **Query inventory data** using the Power Platform inventory API via Azure CLI or direct REST calls
+3. **Shape the results** into a structured dataset (JSON)
+4. **Invoke the frontend-design skill** to create a visually striking, self-contained HTML report from the data
 
 ## Power Platform Inventory API
 
@@ -439,6 +440,41 @@ For each environment, compute:
 - Most recently created / modified resource
 - Whether it is a managed environment
 
+### Step 6 — Collect tenant settings
+
+Use Power Platform CLI to retrieve tenant-wide governance settings:
+
+```bash
+pac admin list-tenant-settings
+```
+
+This returns the full tenant settings JSON including security, governance, and feature flags. Include key settings in the report (e.g., who can create environments, sharing restrictions, AI features enabled).
+
+### Step 7 — Collect DLP policies
+
+First, list all DLP policies in the tenant:
+
+```bash
+pac admin dlp-policy list
+```
+
+Then, for each policy returned, get the full policy details including connector classifications:
+
+```bash
+pac admin dlp-policy show --policy-name "<policy-name-guid>"
+```
+
+Iterate through ALL policies. Each policy contains:
+- Policy display name and description
+- Environment scope (all environments, specific environments, or exclude certain environments)
+- Connector classifications (Business, Non-Business, Blocked)
+- Custom connector patterns
+
+Include in the report:
+- Total number of DLP policies
+- Which environments are covered by which policies
+- A summary of blocked/restricted connectors per policy
+
 ## Building the report
 
 After collecting all data:
@@ -450,4 +486,6 @@ After collecting all data:
    - An environment-by-environment breakdown showing each environment's name, type, region, managed status, and its resource counts
    - A timeline of recently created or modified resources
    - Filters or tabs for drilling into each resource type and each environment
+   - A tenant governance section showing key tenant settings
+   - A DLP policy overview showing all policies, their environment scopes, and connector classifications
 3. The report should be a single `.html` file that works offline with no external dependencies
