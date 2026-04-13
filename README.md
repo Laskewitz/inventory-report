@@ -5,7 +5,7 @@ This repository contains [Agent Skills](https://agentskills.io) for generating v
 ## Skills
 
 | Skill | Description |
-|---|---|
+| --- | --- |
 | [inventory-report](.agents/skills/inventory-report/SKILL.md) | Generate a self-contained HTML or PDF report. Collects data from the inventory API and Power Platform CLI, analyzes gaps, and uses the frontend-design skill to produce a polished visual document. |
 | [inventory-analysis](.agents/skills/inventory-analysis/SKILL.md) | Output findings as markdown directly in GitHub Copilot CLI or Chat. Same data collection and analysis, but presents results inline — no file output. |
 | [frontend-design](.agents/skills/frontend-design/SKILL.md) | Generate distinctive, production-grade HTML interfaces. Used by the inventory-report skill to render the final report. |
@@ -81,7 +81,7 @@ This repo includes additional [Copilot customizations](https://code.visualstudio
 Reusable prompts available as slash commands in VS Code Copilot Chat:
 
 | Command | Description |
-|---|---|
+| --- | --- |
 | `/generate-report` | Generate a full HTML inventory report |
 | `/quick-analysis` | Run a quick governance analysis in chat |
 | `/check-dlp` | Focused DLP policy coverage check |

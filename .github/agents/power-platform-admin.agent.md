@@ -4,7 +4,7 @@ description: Power Platform administration assistant that analyzes inventory, go
 handoffs:
   - label: Generate HTML Report
     agent: agent
-    prompt: "Use the inventory-report skill and the frontend-design skill to generate a self-contained HTML report from the analysis above. Save it as inventory-report.html."
+    prompt: "Use the inventory-report skill and the frontend-design skill to generate a self-contained HTML report from the analysis above. Create a timestamped directory under reports/ using the format reports/YYYYMMDD/HHmm/ and save all report files there."
     send: false
 ---
 # Power Platform Admin Agent

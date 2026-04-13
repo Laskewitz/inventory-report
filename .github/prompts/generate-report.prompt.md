@@ -13,4 +13,4 @@ Use the **inventory-report** skill to:
 
 If the user specified a focus area, prioritize that section but still include the full report.
 
-Save the report as `inventory-report.html` in the repository root.
+Create a timestamped directory under `reports/` using the format `reports/YYYYMMDD/HHmm/` (e.g. `reports/20260413/1540/`) and save all report files there.

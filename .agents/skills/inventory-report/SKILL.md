@@ -45,4 +45,5 @@ After collecting and analyzing all data:
      - Why it needs to be fixed (the business/security/compliance risk)
      - How to fix it (specific pac CLI commands or admin center actions)
      - Priority level (Critical / High / Medium / Low)
-3. The report should be a single `.html` file that works offline with no external dependencies
+3. Create a timestamped output directory under `reports/` using the format `reports/YYYYMMDD/HHmm/` (e.g. `reports/20260413/1540/`). Save all report files there.
+4. The report should be a single `.html` file that works offline with no external dependencies
