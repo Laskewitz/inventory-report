@@ -31,6 +31,7 @@ After collecting and analyzing all data:
 
 1. Summarize key metrics: total resources by type, resources per environment, recently created/modified items
 2. Invoke the **frontend-design** skill to generate a self-contained HTML report with:
+   - A **dark/light mode toggle** — default to dark mode. Include a toggle button (e.g. 🌙/☀️) in the top-right corner. Use CSS custom properties for all colors so the entire theme switches cleanly. Persist the user's preference in `localStorage`.
    - A hero section with headline stats (total apps, flows, agents, environments)
    - A **health score** or risk summary (critical / warning / healthy counts)
    - A breakdown by resource type (charts or styled tables)
