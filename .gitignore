@@ -1,1 +1,4 @@
 .vscode/
+
+# Ignore generated report directories (date-stamped folders) but keep the README
+reports/[0-9]*/
