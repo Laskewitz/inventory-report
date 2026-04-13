@@ -2,9 +2,9 @@
 name: check-environments
 description: Audit all environments for settings gaps and governance issues
 agent: power-platform-admin
-tools: ['Power-Platform-CLI-admin_list', 'Power-Platform-CLI-env_list-settings']
 argument-hint: '[optional: environment name or ID to check a single environment]'
 ---
+
 Audit Power Platform environments for settings gaps and governance issues.
 
 1. Run `pac admin list` to get all environments

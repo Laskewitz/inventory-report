@@ -2,7 +2,6 @@
 name: generate-report
 description: Generate a full Power Platform inventory report as an HTML document
 agent: power-platform-admin
-tools: ['Power-Platform-CLI-admin_list-tenant-settings', 'Power-Platform-CLI-admin_dlp-policy_list', 'Power-Platform-CLI-admin_dlp-policy_show', 'Power-Platform-CLI-env_list-settings', 'Power-Platform-CLI-admin_list']
 argument-hint: '[optional: specific focus area like "DLP only" or "environment X"]'
 ---
 Generate a comprehensive Power Platform inventory report as a self-contained HTML file.

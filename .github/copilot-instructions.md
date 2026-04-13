@@ -11,7 +11,7 @@ This repository contains Agent Skills for generating Power Platform inventory re
 ## Tools
 
 - **Azure CLI** (`az`) — authenticates against Azure Resource Graph for the inventory API
-- **Power Platform CLI** (`pac`) — retrieves tenant settings, DLP policies, environment settings, and environment lists
+- **Power Platform CLI** (`pac`) — retrieves tenant settings, DLP policies, environment settings, and environment lists. Always run `pac` commands directly in the terminal — do not use MCP server tools.
 - Key `pac` commands used in this repo:
   - `pac admin list-tenant-settings` — tenant-wide governance settings
   - `pac admin dlp-policy list` / `pac admin dlp-policy show --policy-name "<guid>"` — DLP policies

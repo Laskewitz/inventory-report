@@ -2,8 +2,8 @@
 name: check-dlp
 description: Check DLP policy coverage and flag gaps
 agent: power-platform-admin
-tools: ['Power-Platform-CLI-admin_dlp-policy_list', 'Power-Platform-CLI-admin_dlp-policy_show', 'Power-Platform-CLI-admin_list']
 ---
+
 Check all DLP policies in the tenant and analyze them for gaps.
 
 1. Run `pac admin dlp-policy list` to get all policies
