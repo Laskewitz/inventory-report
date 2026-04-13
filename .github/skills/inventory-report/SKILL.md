@@ -17,6 +17,8 @@ For inline markdown output in GitHub Copilot CLI or Chat (no file output), use t
 
 ## Workflow
 
+> **⚠️ IMPORTANT: Always collect fresh data.** Every run of this skill **must** re-execute all data collection steps below — never reuse data from a previous run, from conversation history, or from earlier in the same session. Stale data leads to inaccurate reports.
+
 1. **Collect tenant governance data** using Power Platform CLI (`pac admin list-tenant-settings`, `pac admin dlp-policy list/show`)
 2. **Query inventory data** using the Power Platform inventory API via Azure CLI or direct REST calls
 3. **Collect environment settings** using Power Platform CLI (`pac env list-settings`)
@@ -30,8 +32,23 @@ Follow the data collection, analysis, and report structure documented in [invent
 After collecting and analyzing all data:
 
 1. Summarize key metrics: total resources by type, resources per environment, recently created/modified items
-2. Invoke the **frontend-design** skill to generate a self-contained HTML report with:
-   - A **dark/light mode toggle** — default to dark mode. Include a toggle button (e.g. 🌙/☀️) in the top-right corner. Use CSS custom properties for all colors so the entire theme switches cleanly. Persist the user's preference in `localStorage`.
+2. Invoke the **frontend-design** skill to generate a self-contained HTML report. **YOU MUST** include the following features:
+
+### ⚠️ REQUIRED: Dark / Light Mode Toggle
+
+Every report **must** include a working dark/light mode toggle. This is non-negotiable:
+
+- Add a toggle button (e.g. 🌙 / ☀️) **fixed in the top-right corner** of the page
+- **Default to dark mode** on first load
+- Define **all** colors using CSS custom properties on `:root` (dark) and `[data-theme="light"]` (light) selectors
+- On toggle click, set `document.documentElement.dataset.theme` and persist the choice in `localStorage`
+- On page load, read `localStorage` and apply the saved theme before first paint (inline `<script>` in `<head>`)
+- **Every** background, text, border, shadow, and accent color must reference these CSS variables — no hardcoded colors
+
+### Report content
+
+The HTML report must include:
+
    - A hero section with headline stats (total apps, flows, agents, environments)
    - A **health score** or risk summary (critical / warning / healthy counts)
    - A breakdown by resource type (charts or styled tables)

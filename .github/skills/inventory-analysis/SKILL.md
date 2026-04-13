@@ -18,6 +18,8 @@ For a polished HTML or PDF document to share with stakeholders, use the **invent
 
 ## Workflow
 
+> **⚠️ IMPORTANT: Always collect fresh data.** Every run of this skill **must** re-execute all data collection steps below — never reuse data from a previous run, from conversation history, or from earlier in the same session. Stale data leads to inaccurate analysis.
+
 1. **Collect tenant governance data** using Power Platform CLI (`pac admin list-tenant-settings`, `pac admin dlp-policy list/show`)
 2. **Query inventory data** using the Power Platform inventory API via Azure CLI or direct REST calls
 3. **Collect environment settings** using Power Platform CLI (`pac env list-settings`)
