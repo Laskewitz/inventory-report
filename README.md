@@ -68,11 +68,37 @@ pac auth create
 
 This opens a browser for interactive sign-in. Your account needs Power Platform Admin or Global Admin permissions to retrieve tenant settings and DLP policies.
 
+## Copilot customizations
+
+This repo includes additional [Copilot customizations](https://code.visualstudio.com/docs/copilot/customization/overview) for a streamlined experience in VS Code.
+
+### Custom instructions
+
+[`.github/copilot-instructions.md`](.github/copilot-instructions.md) — project-wide context automatically included in every Copilot conversation in this repo. Ensures Copilot always knows about the inventory API, pac CLI, and report conventions.
+
+### Prompt files (slash commands)
+
+Reusable prompts available as slash commands in VS Code Copilot Chat:
+
+| Command | Description |
+|---|---|
+| `/generate-report` | Generate a full HTML inventory report |
+| `/quick-analysis` | Run a quick governance analysis in chat |
+| `/check-dlp` | Focused DLP policy coverage check |
+| `/check-environments` | Audit environment settings for gaps |
+
+### Custom agent
+
+[`@power-platform-admin`](.github/agents/power-platform-admin.agent.md) — a Power Platform administration expert agent that can collect data, analyze governance posture, and hand off to generate HTML reports. Invoke with `@power-platform-admin` in Copilot Chat.
+
 ## Getting started
 
 1. Install and authenticate with the prerequisites above
 2. Open this repository in VS Code or the GitHub Copilot CLI
-3. Ask Copilot to generate an inventory report — the skills are auto-discovered from `.agents/skills/`
+3. Use any of the approaches below:
+   - **Slash commands**: Type `/generate-report`, `/quick-analysis`, `/check-dlp`, or `/check-environments` in Copilot Chat
+   - **Custom agent**: Type `@power-platform-admin` followed by your question
+   - **Direct**: Ask Copilot to generate an inventory report — the skills are auto-discovered from `.agents/skills/`
 4. The inventory-report skill collects data from the inventory API and Power Platform CLI, then hands off to the frontend-design skill to produce a single `.html` report
 
 ## Resources
