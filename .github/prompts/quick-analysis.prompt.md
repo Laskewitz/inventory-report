@@ -1,7 +1,7 @@
 ---
 name: quick-analysis
 description: Run a quick Power Platform governance analysis and show results in chat
-agent: power-platform-admin
+agent: 'Power Platform Admin'
 argument-hint: '[optional: specific area like "tenant settings" or "environment X"]'
 ---
 

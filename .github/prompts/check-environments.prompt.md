@@ -1,7 +1,7 @@
 ---
 name: check-environments
 description: Audit all environments for settings gaps and governance issues
-agent: power-platform-admin
+agent: 'Power Platform Admin'
 argument-hint: '[optional: environment name or ID to check a single environment]'
 ---
 

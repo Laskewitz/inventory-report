@@ -1,7 +1,7 @@
 ---
 name: check-dlp
 description: Check DLP policy coverage and flag gaps
-agent: power-platform-admin
+agent: 'Power Platform Admin'
 ---
 
 Check all DLP policies in the tenant and analyze them for gaps.
