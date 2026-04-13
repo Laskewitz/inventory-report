@@ -6,7 +6,8 @@ This repository contains [Agent Skills](https://agentskills.io) for generating v
 
 | Skill | Description |
 |---|---|
-| [inventory-report](.agents/skills/inventory-report/SKILL.md) | Query the Power Platform inventory API and Power Platform CLI for resources, tenant settings, and DLP policies. Knows the full API schema and query patterns. |
+| [inventory-report](.agents/skills/inventory-report/SKILL.md) | Generate a self-contained HTML or PDF report. Collects data from the inventory API and Power Platform CLI, analyzes gaps, and uses the frontend-design skill to produce a polished visual document. |
+| [inventory-analysis](.agents/skills/inventory-analysis/SKILL.md) | Output findings as markdown directly in GitHub Copilot CLI or Chat. Same data collection and analysis, but presents results inline — no file output. |
 | [frontend-design](.agents/skills/frontend-design/SKILL.md) | Generate distinctive, production-grade HTML interfaces. Used by the inventory-report skill to render the final report. |
 
 ## Prerequisites
