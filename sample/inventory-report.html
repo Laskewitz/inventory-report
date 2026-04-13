@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform Inventory Report</title>
+<script>
+  // Apply theme before first paint to prevent flash
+  (function() {
+    var saved = localStorage.getItem('pp-report-theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+  })();
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ── Dark theme (default) ── */
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2233;
+  --bg-card-hover: #1f2a3d;
+  --bg-input: #0d1321;
+  --border-color: #1e2d44;
+  --border-accent: #2563eb;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8b97b0;
+  --text-muted: #5b6782;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.15);
+  --success: #22c55e;
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --critical: #ef4444;
+  --critical-bg: rgba(239, 68, 68, 0.1);
+  --info: #06b6d4;
+  --info-bg: rgba(6, 182, 212, 0.1);
+  --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --table-stripe: rgba(255,255,255,0.02);
+  --toggle-bg: #1e2d44;
+  --toggle-fg: #e8ecf4;
+  --bar-bg: #1e2d44;
+  --bar-fill: #3b82f6;
+  --pill-bg: rgba(59,130,246,0.15);
+  --pill-text: #60a5fa;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-input: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-accent: #2563eb;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.08);
+  --success: #16a34a;
+  --success-bg: rgba(22, 163, 74, 0.08);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.08);
+  --critical: #dc2626;
+  --critical-bg: rgba(220, 38, 38, 0.06);
+  --info: #0891b2;
+  --info-bg: rgba(8, 145, 178, 0.06);
+  --hero-gradient: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 50%, #f0f9ff 100%);
+  --card-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  --table-stripe: rgba(0,0,0,0.02);
+  --toggle-bg: #e2e8f0;
+  --toggle-fg: #0f172a;
+  --bar-bg: #e2e8f0;
+  --bar-fill: #2563eb;
+  --pill-bg: rgba(37,99,235,0.08);
+  --pill-text: #2563eb;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Theme toggle ── */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+/* ── Hero ── */
+.hero {
+  background: var(--hero-gradient);
+  padding: 60px 40px 50px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.hero .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+  position: relative;
+}
+.hero .tenant-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  position: relative;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+.stat-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+  transform: translateY(-2px);
+}
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+}
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* ── Health score ── */
+.health-bar {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+.health-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.health-critical { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
+.health-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+.health-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+
+/* ── Content ── */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 40px;
+}
+.section {
+  margin-bottom: 48px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+.section-header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.section-header .icon {
+  font-size: 1.4rem;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  box-shadow: var(--card-shadow);
+}
+
+/* ── Tables ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+thead th {
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+tbody tr:nth-child(even) { background: var(--table-stripe); }
+tbody tr:hover { background: var(--bg-card-hover); }
+.num { font-family: 'JetBrains Mono', monospace; text-align: right; font-weight: 600; }
+.text-muted { color: var(--text-muted); font-style: italic; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+.badge-critical { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
+.badge-info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info); }
+
+.env-type {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.env-type-default { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+.env-type-production { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
+.env-type-sandbox { background: var(--info-bg); color: var(--info); border: 1px solid var(--info); }
+.env-type-developer { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+
+.resource-type-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+}
+
+.env-name { font-weight: 600; }
+.breakdown { font-size: 0.82rem; color: var(--text-secondary); }
+
+/* ── Bars ── */
+.bar-container {
+  background: var(--bar-bg);
+  border-radius: 4px;
+  height: 8px;
+  width: 100%;
+  min-width: 100px;
+}
+.bar {
+  background: var(--bar-fill);
+  border-radius: 4px;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+/* ── Finding cards ── */
+.finding {
+  padding: 20px 24px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border-left: 4px solid;
+}
+.finding-critical { background: var(--critical-bg); border-color: var(--critical); }
+.finding-warning { background: var(--warning-bg); border-color: var(--warning); }
+.finding-info { background: var(--info-bg); border-color: var(--info); }
+.finding h3 { font-size: 1rem; margin-bottom: 6px; }
+.finding p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.6; }
+.finding .fix { font-size: 0.85rem; padding: 8px 12px; background: var(--bg-input); border-radius: 6px; font-family: 'JetBrains Mono', monospace; color: var(--text-primary); margin-top: 8px; word-break: break-all; }
+
+/* ── Recommendations ── */
+.rec-table td:first-child { font-family: 'JetBrains Mono', monospace; font-weight: 700; text-align: center; width: 40px; }
+
+/* ── Nav tabs ── */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+.nav-tab {
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.nav-tab:hover { color: var(--text-primary); }
+.nav-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 40px 20px 30px; }
+  .container { padding: 20px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">🌙</button>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>⚡ Power Platform Inventory Report</h1>
+  <p class="subtitle">Tenant: <span class="tenant-name">contoso.onmicrosoft.com</span></p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-value">22</div>
+      <div class="stat-label">Environments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">68</div>
+      <div class="stat-label">Copilot Agents</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">81</div>
+      <div class="stat-label">Model-driven Apps</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">18</div>
+      <div class="stat-label">Flows</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">10</div>
+      <div class="stat-label">Code / Builder Apps</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Managed Envs</div>
+    </div>
+  </div>
+
+  <div class="health-bar">
+    <div class="health-item health-critical">🔴 5 Critical</div>
+    <div class="health-item health-warning">🟡 4 Warnings</div>
+    <div class="health-item health-success">🟢 3 Healthy</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
+    <button class="nav-tab" onclick="showTab('environments')">Environments</button>
+    <button class="nav-tab" onclick="showTab('resources')">Resources</button>
+    <button class="nav-tab" onclick="showTab('governance')">Tenant Governance</button>
+    <button class="nav-tab" onclick="showTab('dlp')">DLP Policies</button>
+    <button class="nav-tab" onclick="showTab('env-settings')">Environment Settings</button>
+    <button class="nav-tab" onclick="showTab('recommendations')">Recommendations</button>
+  </div>
+
+  <!-- Overview Tab -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="section">
+      <div class="section-header"><span class="icon">📊</span><h2>Resource Breakdown</h2></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Resource Type</th><th>Count</th><th>Distribution</th><th>Share</th></tr></thead>
+          <tbody><tr>
+        <td>📊 Model-driven Apps</td>
+        <td class="num">81</td>
+        <td><div class="bar-container"><div class="bar" style="width:46%"></div></div></td>
+        <td class="num">46%</td>
+    </tr><tr>
+        <td>🧠 Copilot Studio Agents</td>
+        <td class="num">68</td>
+        <td><div class="bar-container"><div class="bar" style="width:38%"></div></div></td>
+        <td class="num">38%</td>
+    </tr><tr>
+        <td>🤖 Agent Flows</td>
+        <td class="num">9</td>
+        <td><div class="bar-container"><div class="bar" style="width:5%"></div></div></td>
+        <td class="num">5%</td>
+    </tr><tr>
+        <td>⚡ Cloud Flows</td>
+        <td class="num">8</td>
+        <td><div class="bar-container"><div class="bar" style="width:5%"></div></div></td>
+        <td class="num">5%</td>
+    </tr><tr>
+        <td>🏗️ App Builder Apps</td>
+        <td class="num">6</td>
+        <td><div class="bar-container"><div class="bar" style="width:3%"></div></div></td>
+        <td class="num">3%</td>
+    </tr><tr>
+        <td>💻 Code Apps</td>
+        <td class="num">4</td>
+        <td><div class="bar-container"><div class="bar" style="width:2%"></div></div></td>
+        <td class="num">2%</td>
+    </tr><tr>
+        <td>🔄 M365 Agent Flows</td>
+        <td class="num">1</td>
+        <td><div class="bar-container"><div class="bar" style="width:1%"></div></div></td>
+        <td class="num">1%</td>
+    </tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><span class="icon">🕐</span><h2>Recently Created Resources</h2></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>Type</th><th>Environment</th><th>Created</th></tr></thead>
+          <tbody><tr>
+        <td>🧠 BC Agent</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Alex Johnson</td>
+        <td>2026-04-12</td>
+    </tr><tr>
+        <td>🧠 Warehouse Inventory Manager</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-10</td>
+    </tr><tr>
+        <td>⚡ Recurring Copilot Trigger</td>
+        <td><span class="resource-type-pill">Cloud Flows</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-10</td>
+    </tr><tr>
+        <td>🧠 Inventory Alert Monitor</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-10</td>
+    </tr><tr>
+        <td>⚡ When a new email arrives (V3)</td>
+        <td><span class="resource-type-pill">Cloud Flows</span></td>
+        <td>Code Apps (Morgan Chen)</td>
+        <td>2026-04-10</td>
+    </tr><tr>
+        <td>📊 Zava order system</td>
+        <td><span class="resource-type-pill">Model-driven Apps</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>⚡ Recurring Copilot Trigger</td>
+        <td><span class="resource-type-pill">Cloud Flows</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>🤖 Create Product Inventory Adjustment</td>
+        <td><span class="resource-type-pill">Agent Flows</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>🧠 Warehouse Agent (Full)</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>🧠 Inventory Monitoring Agent (Full)</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>🧠 Warehouse Agent (Template)</td>
+        <td><span class="resource-type-pill">Copilot Studio Agents</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr><tr>
+        <td>📊 Power Pages Management</td>
+        <td><span class="resource-type-pill">Model-driven Apps</span></td>
+        <td>Workshop SYD</td>
+        <td>2026-04-09</td>
+    </tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Environments Tab -->
+  <div id="tab-environments" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">🌐</span><h2>Environment Inventory (22 environments)</h2></div>
+      <p style="color:var(--text-secondary);margin-bottom:16px;">
+        5 managed · 17 not managed · 1 with no resources ·
+        1 environment group (Personal Environments)
+      </p>
+      <div class="card" style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Environment</th><th>Type</th><th>Managed</th><th>Region</th><th>Resources</th><th>Breakdown</th></tr></thead>
+          <tbody><tr>
+        <td class="env-name">Agent Academy Commander (Morgan Chen)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">37</td>
+        <td class="breakdown">Agents: 28, Apps: 9</td>
+    </tr><tr>
+        <td class="env-name">dev-sandbox</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">14</td>
+        <td class="breakdown">Agents: 5, Apps: 5, Flows: 3, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">user-agent-academy</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">13</td>
+        <td class="breakdown">Apps: 5, Flows: 5, Agents: 3</td>
+    </tr><tr>
+        <td class="env-name">Code Apps (Morgan Chen)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">13</td>
+        <td class="breakdown">Agents: 5, Apps: 4, Apps: 3, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">Workshop SYD</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">12</td>
+        <td class="breakdown">Agents: 5, Apps: 4, Flows: 2, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">Workshop26 BRK431 (rsmith)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">10</td>
+        <td class="breakdown">Agents: 5, Apps: 4, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">user-dev</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">8</td>
+        <td class="breakdown">Agents: 3, Apps: 3, Flows: 2</td>
+    </tr><tr>
+        <td class="env-name">Taylor Kim</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-success">✓ Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">8</td>
+        <td class="breakdown">Agents: 3, Apps: 3, Apps: 1, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">Alex Johnson</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-success">✓ Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">7</td>
+        <td class="breakdown">Agents: 4, Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">Workshop26 BRK431 (mchen)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">7</td>
+        <td class="breakdown">Agents: 3, Apps: 3, Flows: 1</td>
+    </tr><tr>
+        <td class="env-name">Contoso Platform (default)</td>
+        <td><span class="env-type env-type-default">Default</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">5</td>
+        <td class="breakdown">Apps: 3, Agents: 2</td>
+    </tr><tr>
+        <td class="env-name">LabTest1</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">4</td>
+        <td class="breakdown">Apps: 4</td>
+    </tr><tr>
+        <td class="env-name">Alex Johnson (Preview)</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-success">✓ Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">4</td>
+        <td class="breakdown">Apps: 3, Agents: 1</td>
+    </tr><tr>
+        <td class="env-name">Morgan Chen</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-success">✓ Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">4</td>
+        <td class="breakdown">Apps: 3, Agents: 1</td>
+    </tr><tr>
+        <td class="env-name">GenPages (Morgan Chen)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">4</td>
+        <td class="breakdown">Apps: 4</td>
+    </tr><tr>
+        <td class="env-name">dev-cs-academy</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">Microsoft 365</td>
+        <td><span class="env-type env-type-production">Production</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">Jordan Lee</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-success">✓ Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">PowerPagesDeveloper-033126-184711</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">Workshop (Morgan Chen)</td>
+        <td><span class="env-type env-type-sandbox">Sandbox</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">Team Demos</td>
+        <td><span class="env-type env-type-production">Production</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">3</td>
+        <td class="breakdown">Apps: 3</td>
+    </tr><tr>
+        <td class="env-name">PowerPagesDeveloper-033126-185220</td>
+        <td><span class="env-type env-type-developer">Developer</span></td>
+        <td><span class="badge badge-warning">Not Managed</span></td>
+        <td>unitedstates</td>
+        <td class="num">0</td>
+        <td class="breakdown"><span class="text-muted">No resources</span></td>
+    </tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resources Tab -->
+  <div id="tab-resources" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">📦</span><h2>All Resources (177 total)</h2></div>
+      <div class="card">
+        <p style="color:var(--text-secondary);margin-bottom:16px;">Showing resource counts per environment, sorted by total resources.</p>
+        <table>
+          <thead><tr><th>Environment</th><th>Agents</th><th>Model-driven</th><th>Cloud Flows</th><th>Agent Flows</th><th>Code Apps</th><th>Builder Apps</th><th>M365 Flows</th><th>Total</th></tr></thead>
+          <tbody><tr>
+        <td class="env-name">Agent Academy Commander (Morgan Chen)</td>
+        <td class="num">28</td>
+        <td class="num">9</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">37</td>
+    </tr><tr>
+        <td class="env-name">dev-sandbox</td>
+        <td class="num">5</td>
+        <td class="num">5</td>
+        <td class="num">3</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">14</td>
+    </tr><tr>
+        <td class="env-name">Code Apps (Morgan Chen)</td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">13</td>
+    </tr><tr>
+        <td class="env-name">user-agent-academy</td>
+        <td class="num">3</td>
+        <td class="num">5</td>
+        <td class="num">—</td>
+        <td class="num">5</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">13</td>
+    </tr><tr>
+        <td class="env-name">Workshop SYD</td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">2</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">12</td>
+    </tr><tr>
+        <td class="env-name">Workshop26 BRK431 (rsmith)</td>
+        <td class="num">5</td>
+        <td class="num">4</td>
+        <td class="num">—</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">10</td>
+    </tr><tr>
+        <td class="env-name">Unknown</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">6</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">9</td>
+    </tr><tr>
+        <td class="env-name">Taylor Kim</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">1</td>
+        <td class="num" style="font-weight:700;">8</td>
+    </tr><tr>
+        <td class="env-name">user-dev</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">2</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">8</td>
+    </tr><tr>
+        <td class="env-name">Alex Johnson</td>
+        <td class="num">4</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">7</td>
+    </tr><tr>
+        <td class="env-name">Workshop26 BRK431 (mchen)</td>
+        <td class="num">3</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">1</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">7</td>
+    </tr><tr>
+        <td class="env-name">Contoso Platform (default)</td>
+        <td class="num">2</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">5</td>
+    </tr><tr>
+        <td class="env-name">LabTest1</td>
+        <td class="num">—</td>
+        <td class="num">4</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">4</td>
+    </tr><tr>
+        <td class="env-name">GenPages (Morgan Chen)</td>
+        <td class="num">—</td>
+        <td class="num">4</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">4</td>
+    </tr><tr>
+        <td class="env-name">Morgan Chen</td>
+        <td class="num">1</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">4</td>
+    </tr><tr>
+        <td class="env-name">Alex Johnson (Preview)</td>
+        <td class="num">1</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">4</td>
+    </tr><tr>
+        <td class="env-name">PowerPagesDeveloper-033126-184711</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr><tr>
+        <td class="env-name">Jordan Lee</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr><tr>
+        <td class="env-name">Microsoft 365</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr><tr>
+        <td class="env-name">Team Demos</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr><tr>
+        <td class="env-name">Workshop (Morgan Chen)</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr><tr>
+        <td class="env-name">dev-cs-academy</td>
+        <td class="num">—</td>
+        <td class="num">3</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" style="font-weight:700;">3</td>
+    </tr></tbody></table></div></div></div>
+
+  <!-- Governance Tab -->
+  <div id="tab-governance" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">🏛️</span><h2>Tenant Governance Settings</h2></div>
+      <div class="finding finding-critical">
+        <h3>🔴 Critical: Environment creation open to all users</h3>
+        <p><strong>Current value:</strong> <code>disableEnvironmentCreationByNonAdminUsers = false</code></p>
+        <p>Any licensed user can create production and sandbox environments. This leads to uncontrolled environment sprawl, increases licensing and capacity costs, and creates ungoverned shadow IT. An employee could spin up a production environment, connect it to sensitive data sources, and share it externally — all without admin visibility.</p>
+        <div class="fix">pac admin update-tenant-settings --setting-name "disableEnvironmentCreationByNonAdminUsers" --setting-value "true"</div>
+      </div>
+
+      <div class="finding finding-critical">
+        <h3>🔴 Critical: Trial environment creation open to all users</h3>
+        <p><strong>Current value:</strong> <code>disableTrialEnvironmentCreationByNonAdminUsers = false</code></p>
+        <p>Trials auto-expire after 30 days. Users may build real workloads in trials, losing data when they expire. Trials also consume capacity and create unmonitored environments where sensitive data could be processed without governance oversight.</p>
+        <div class="fix">pac admin update-tenant-settings --setting-name "disableTrialEnvironmentCreationByNonAdminUsers" --setting-value "true"</div>
+      </div>
+
+      <div class="finding finding-warning">
+        <h3>🟡 High: Developer environment creation open to all users</h3>
+        <p><strong>Current value:</strong> <code>disableDeveloperEnvironmentCreationByNonAdminUsers = false</code></p>
+        <p>Developer environments are personal but still consume capacity. Unrestricted creation leads to environment sprawl and makes it harder to maintain an accurate inventory. Currently there are already 7 developer environments in this tenant.</p>
+        <div class="fix">pac admin update-tenant-settings --setting-name "powerPlatform.governance.disableDeveloperEnvironmentCreationByNonAdminUsers" --setting-value "true"</div>
+      </div>
+      <div class="section-header" style="margin-top:32px;"><span class="icon">📋</span><h2>Key Tenant Settings Overview</h2></div>
+      <div class="card" style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Setting</th><th>Current Value</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Environment creation by non-admins</td><td>Allowed</td><td><span class="badge badge-critical">🔴 Critical</span></td></tr>
+            <tr><td>Trial creation by non-admins</td><td>Allowed</td><td><span class="badge badge-critical">🔴 Critical</span></td></tr>
+            <tr><td>Developer env creation by non-admins</td><td>Allowed</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Default environment routing</td><td>Enabled</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Share with Everyone disabled</td><td>True</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Canvas App Insights</td><td>Enabled</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Copilot enabled</td><td>True</td><td><span class="badge badge-info">ℹ️ Review</span></td></tr>
+            <tr><td>Copilot feedback disabled</td><td>True</td><td><span class="badge badge-info">ℹ️ Note</span></td></tr>
+            <tr><td>Guest makers</td><td>Disabled</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Connection sharing with Everyone</td><td>Allowed</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Flow run resubmission disabled</td><td>True</td><td><span class="badge badge-info">ℹ️ Note</span></td></tr>
+            <tr><td>Portal creation by non-admins</td><td>Allowed</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Desktop flow DLP management</td><td>Disabled</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Capacity report for env admins</td><td>Disabled</td><td><span class="badge badge-info">ℹ️ Note</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DLP Tab -->
+  <div id="tab-dlp" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">🛡️</span><h2>DLP Policy Overview</h2></div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <table>
+          <thead><tr><th>Policy</th><th>Scope</th><th>Confidential</th><th>General</th><th>Blocked</th><th>Created</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="env-name">Default</td>
+              <td><span class="badge badge-info">All Environments</span></td>
+              <td class="num">0</td>
+              <td class="num">1,622</td>
+              <td class="num">0</td>
+              <td>2026-04-13</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="finding finding-critical">
+        <h3>🔴 Critical: All 1,622 connectors in General — no data separation</h3>
+        <p>The single DLP policy classifies every connector as "General" (non-business). This means <strong>any connector can communicate with any other connector</strong> — there is effectively zero data loss prevention. A maker could create a flow that reads from SharePoint or Dataverse and sends the data to a personal Gmail, Dropbox, or an arbitrary HTTP endpoint.</p>
+        <p><strong>What could happen:</strong> An employee (maliciously or accidentally) builds a flow: Dataverse → HTTP connector → external API. Sensitive customer data is exfiltrated without any alert or block. During a compliance audit, you cannot demonstrate that data flows are controlled.</p>
+        <div class="fix">Reclassify sensitive connectors (Dataverse, SharePoint, SQL Server, Office 365, etc.) into the Confidential group. This prevents them from being used alongside non-business connectors.</div>
+      </div>
+
+      <div class="finding finding-critical">
+        <h3>🔴 Critical: No connectors in the Blocked group</h3>
+        <p>The HTTP connector, custom connectors, and other high-risk connectors are not blocked in any environment. The HTTP connector allows calling <strong>any external API</strong>, completely bypassing the intent of DLP policies. Custom connectors can wrap arbitrary REST APIs.</p>
+        <p><strong>What could happen:</strong> A maker adds an HTTP action in a flow that posts Dataverse records to an external webhook. Since HTTP is unblocked and in the same group as Dataverse, no DLP rule prevents this. Data leaves the organization boundary with no audit trail in DLP.</p>
+        <div class="fix">Block the HTTP connector, custom connectors, and other high-risk connectors in all production, sandbox, and default environments. Only allow them in designated development environments with proper justification.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Environment Settings Tab -->
+  <div id="tab-env-settings" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">⚙️</span><h2>Environment Settings Analysis</h2></div>
+      <p style="color:var(--text-secondary);margin-bottom:20px;">Settings sampled from: Default environment, Team Demos (Production), Alex Johnson (Developer)</p>
+
+      <div class="finding finding-critical">
+        <h3>🔴 Critical: Auditing disabled in all sampled environments</h3>
+        <p><strong>Affected:</strong> Contoso Platform (Default), Team Demos (Production), Alex Johnson (Developer)</p>
+        <p>Auditing is disabled (<code>isauditenabled = No</code>) in every environment checked, including production. Without auditing, you have <strong>no record of who accessed, modified, or deleted data</strong>. This is required for SOC 2, ISO 27001, GDPR, and HIPAA compliance. If a security incident occurs, there is no forensic trail to investigate.</p>
+        <div class="fix">pac env update-settings --name isauditenabled --value true --environment "&lt;environment-id&gt;"</div>
+      </div>
+
+      <div class="finding finding-warning">
+        <h3>🟡 Warning: Session timeout disabled in all sampled environments</h3>
+        <p><strong>Affected:</strong> Contoso Platform (Default), Team Demos (Production), Alex Johnson (Developer)</p>
+        <p>Session timeout is disabled (<code>sessiontimeoutenabled = No</code>). Users who walk away from a shared device or forget to log out remain authenticated indefinitely. This is a session hijacking risk, especially in shared workspaces, kiosks, or when employees use public computers.</p>
+        <div class="fix">pac env update-settings --name sessiontimeoutenabled --value true --environment "&lt;environment-id&gt;"<br>pac env update-settings --name sessiontimeoutinmins --value 60 --environment "&lt;environment-id&gt;"</div>
+      </div>
+
+      <div class="card" style="margin-top:20px;overflow-x:auto;">
+        <table>
+          <thead><tr><th>Setting</th><th>Default Env</th><th>Team Demos (Prod)</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Auditing enabled</td><td>No</td><td>No</td><td><span class="badge badge-critical">🔴 Critical</span></td></tr>
+            <tr><td>Read auditing</td><td>No</td><td>No</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>User access auditing</td><td>No</td><td>No</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Session timeout</td><td>Disabled</td><td>Disabled</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
+            <tr><td>Plugin trace logging</td><td>Off</td><td>Off</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Max upload file size</td><td>5 MB</td><td>5 MB</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Blocked attachments</td><td>Comprehensive list</td><td>Comprehensive list</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendations Tab -->
+  <div id="tab-recommendations" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">🎯</span><h2>Prioritized Recommendations</h2></div>
+      <div class="card" style="overflow-x:auto;">
+        <table class="rec-table">
+          <thead><tr><th>#</th><th>Priority</th><th>Action</th><th>Why</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><span class="badge badge-critical">Critical</span></td><td>Reclassify DLP connectors and block high-risk connectors</td><td>Currently all 1,622 connectors are in General — any data can flow anywhere. Zero data loss prevention.</td><td>Edit the Default DLP policy in Power Platform admin center. Move Dataverse, SharePoint, SQL, O365 to Confidential. Block HTTP and custom connectors.</td></tr>
+            <tr><td>2</td><td><span class="badge badge-critical">Critical</span></td><td>Enable auditing in all production and default environments</td><td>Auditing is disabled everywhere. No forensic trail for incident response. Non-compliant with SOC 2 / ISO 27001 / GDPR.</td><td><code>pac env update-settings --name isauditenabled --value true --environment "&lt;id&gt;"</code></td></tr>
+            <tr><td>3</td><td><span class="badge badge-critical">Critical</span></td><td>Restrict environment creation to admins only</td><td>Any user can create production/sandbox/trial environments, leading to sprawl and ungoverned shadow IT.</td><td><code>pac admin update-tenant-settings --setting-name "disableEnvironmentCreationByNonAdminUsers" --setting-value "true"</code></td></tr>
+            <tr><td>4</td><td><span class="badge badge-critical">Critical</span></td><td>Restrict trial environment creation</td><td>Trials auto-expire after 30 days causing data loss. Users may build real workloads in trials.</td><td><code>pac admin update-tenant-settings --setting-name "disableTrialEnvironmentCreationByNonAdminUsers" --setting-value "true"</code></td></tr>
+            <tr><td>5</td><td><span class="badge badge-warning">High</span></td><td>Enable session timeout in production environments</td><td>No session timeout means indefinite authenticated sessions — session hijacking risk on shared devices.</td><td><code>pac env update-settings --name sessiontimeoutenabled --value true --environment "&lt;id&gt;"</code></td></tr>
+            <tr><td>6</td><td><span class="badge badge-warning">High</span></td><td>Enable Managed Environments for production and sandbox</td><td>Only 5 of 22 environments are managed. Non-managed environments lack admin insights, usage tracking, and policy enforcement.</td><td><code>pac admin set-governance-config --environment "&lt;id&gt;" --protection-level Standard</code></td></tr>
+            <tr><td>7</td><td><span class="badge badge-warning">High</span></td><td>Restrict developer environment creation</td><td>7 developer environments already exist. Unrestricted creation leads to capacity consumption and inventory bloat.</td><td><code>pac admin update-tenant-settings --setting-name "powerPlatform.governance.disableDeveloperEnvironmentCreationByNonAdminUsers" --setting-value "true"</code></td></tr>
+            <tr><td>8</td><td><span class="badge badge-warning">Medium</span></td><td>Disable connection sharing with Everyone</td><td>Connections shared with everyone expose data source credentials to all users in the environment.</td><td><code>pac admin update-tenant-settings --setting-name "powerPlatform.powerApps.disableConnectionSharingWithEveryone" --setting-value "true"</code></td></tr>
+            <tr><td>9</td><td><span class="badge badge-warning">Medium</span></td><td>Restrict portal creation to admins</td><td>Power Pages websites expose Dataverse data externally. Unrestricted creation increases attack surface.</td><td><code>pac admin update-tenant-settings --setting-name "disablePortalsCreationByNonAdminUsers" --setting-value "true"</code></td></tr>
+            <tr><td>10</td><td><span class="badge badge-info">Low</span></td><td>Enable desktop flow DLP management</td><td>Desktop flows can interact with local systems and files. Without DLP coverage, they operate outside governance boundaries.</td><td><code>pac admin update-tenant-settings --setting-name "powerPlatform.governance.policy.enableDesktopFlowDataPolicyManagement" --setting-value "true"</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  Power Platform Inventory Report · contoso.onmicrosoft.com
+</div>
+
+<script>
+// Theme toggle
+const toggle = document.getElementById('themeToggle');
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  toggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('pp-report-theme', theme);
+}
+toggle.addEventListener('click', function() {
+  var current = document.documentElement.dataset.theme || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+// Apply saved theme icon
+var saved = localStorage.getItem('pp-report-theme') || 'dark';
+toggle.textContent = saved === 'dark' ? '🌙' : '☀️';
+
+// Tab navigation
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
