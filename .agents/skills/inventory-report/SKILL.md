@@ -47,3 +47,4 @@ After collecting and analyzing all data:
      - Priority level (Critical / High / Medium / Low)
 3. Create a timestamped output directory under `reports/` using the format `reports/YYYYMMDD/HHmm/` (e.g. `reports/20260413/1540/`). Save all report files there.
 4. The report should be a single `.html` file that works offline with no external dependencies
+5. After saving the report, open it in the VS Code integrated browser by running the command `Browser: Open Integrated Browser` and navigating to the `file://` URL of the generated report
