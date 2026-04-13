@@ -501,9 +501,17 @@ Iterate through ALL environments and collect their settings. The command returns
 
 After collecting all data, analyze EVERY piece of output from the PAC commands and the inventory API. Do not just present raw data — interpret it, flag issues, explain WHY each issue matters, and provide actionable next steps.
 
+**For every setting that deviates from best practice, you MUST explain:**
+
+1. **What** the current value is
+2. **Why** this is a problem — the specific business, security, or compliance risk it creates
+3. **What could happen** if it is not fixed — concrete scenarios (e.g., "an attacker could…", "if an employee leaves…", "during an audit, this would…")
+4. **How** to fix it — the exact `pac` CLI command, admin center action, or policy change needed
+5. **Priority** — Critical / High / Medium / Low based on likelihood and impact
+
 ### Tenant settings analysis
 
-Review every tenant setting and flag deviations from best practices:
+Review every tenant setting and flag deviations from best practices. For each flagged setting, explain the current value, why it is risky with a concrete example of what could go wrong, and how to fix it:
 
 | Setting area | What to check | Why it matters | Recommended action |
 |---|---|---|---|
@@ -515,7 +523,7 @@ Review every tenant setting and flag deviations from best practices:
 
 ### DLP policy analysis
 
-For each DLP policy, analyze:
+For each DLP policy, analyze the configuration and explain what risk each gap introduces — not just that it exists, but what a malicious or careless user could do because of it:
 
 | What to check | Why it matters | Recommended action |
 |---|---|---|
@@ -527,7 +535,7 @@ For each DLP policy, analyze:
 
 ### Environment settings analysis
 
-For each environment, analyze these key settings and flag issues:
+For each environment, analyze these key settings and flag issues. Do not just say a setting is wrong — explain the real-world consequence of leaving it as-is:
 
 | Setting | Why it matters | What to flag |
 |---|---|---|
@@ -540,7 +548,7 @@ For each environment, analyze these key settings and flag issues:
 
 ### Inventory analysis
 
-Analyze the resource data from the inventory API:
+Analyze the resource data from the inventory API. For every finding, describe the governance risk and what happens if the issue is left unaddressed:
 
 | What to check | Why it matters | Recommended action |
 |---|---|---|
