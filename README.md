@@ -10,43 +10,43 @@ Reports include headline stats, health scores, critical findings with risk expla
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Overview – dark](assets/images/report-overview-dark.png) | ![Overview – light](assets/images/report-overview-light.png) |
+| ![Overview – dark](assets/report-overview-dark.png) | ![Overview – light](assets/report-overview-light.png) |
 
 ### Environments
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Environments – dark](assets/images/report-environments-dark.png) | ![Environments – light](assets/images/report-environments-light.png) |
+| ![Environments – dark](assets/report-environments-dark.png) | ![Environments – light](assets/report-environments-light.png) |
 
 ### Resources
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Resources – dark](assets/images/report-resources-dark.png) | ![Resources – light](assets/images/report-resources-light.png) |
+| ![Resources – dark](assets/report-resources-dark.png) | ![Resources – light](assets/report-resources-light.png) |
 
 ### Tenant Governance
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Tenant Governance – dark](assets/images/report-governance-dark.png) | ![Tenant Governance – light](assets/images/report-governance-light.png) |
+| ![Tenant Governance – dark](assets/report-governance-dark.png) | ![Tenant Governance – light](assets/report-governance-light.png) |
 
 ### DLP Policies
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![DLP Policies – dark](assets/images/report-dlp-dark.png) | ![DLP Policies – light](assets/images/report-dlp-light.png) |
+| ![DLP Policies – dark](assets/report-dlp-dark.png) | ![DLP Policies – light](assets/report-dlp-light.png) |
 
 ### Environment Settings
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Environment Settings – dark](assets/images/report-env-settings-dark.png) | ![Environment Settings – light](assets/images/report-env-settings-light.png) |
+| ![Environment Settings – dark](assets/report-env-settings-dark.png) | ![Environment Settings – light](assets/report-env-settings-light.png) |
 
 ### Recommendations
 
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Recommendations – dark](assets/images/report-recommendations-dark.png) | ![Recommendations – light](assets/images/report-recommendations-light.png) |
+| ![Recommendations – dark](assets/report-recommendations-dark.png) | ![Recommendations – light](assets/report-recommendations-light.png) |
 
 ## What's included
 

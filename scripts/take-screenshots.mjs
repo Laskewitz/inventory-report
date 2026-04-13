@@ -58,5 +58,5 @@ const themes = ['dark', 'light'];
   }
 
   await browser.close();
-  console.log('\nDone! All screenshots saved to assets/images/');
+  console.log('\nDone! All screenshots saved to assets/');
 })();
