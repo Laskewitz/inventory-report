@@ -317,15 +317,137 @@ The API returns a `ResourceQueryResult` object:
 
 Use `skipToken` for pagination when `resultTruncated` is `1`.
 
+## Data collection strategy
+
+You MUST collect a complete picture of the tenant. Follow these steps in order:
+
+### Step 1 — Enumerate all environments
+
+Query for all environments first. This gives you the full list of environment IDs, names, types, and regions.
+
+```json
+{
+  "TableName": "PowerPlatformResources",
+  "Options": { "Top": 1000, "Skip": 0, "SkipToken": "" },
+  "Clauses": [
+    {
+      "$type": "where",
+      "FieldName": "type",
+      "Operator": "==",
+      "Values": ["'microsoft.powerplatform/environments'"]
+    },
+    {
+      "$type": "project",
+      "FieldList": [
+        "name",
+        "properties.displayName",
+        "location",
+        "properties.environmentType",
+        "properties.isManaged",
+        "properties.environmentGroup",
+        "properties.environmentGroupId",
+        "properties.lastModifiedAt"
+      ]
+    }
+  ]
+}
+```
+
+Handle pagination: if `resultTruncated` is `1`, re-query with the returned `skipToken` until all environments are collected.
+
+### Step 2 — Enumerate all environment groups
+
+```json
+{
+  "TableName": "PowerPlatformResources",
+  "Options": { "Top": 1000, "Skip": 0, "SkipToken": "" },
+  "Clauses": [
+    {
+      "$type": "where",
+      "FieldName": "type",
+      "Operator": "==",
+      "Values": ["'microsoft.powerplatform/environmentgroups'"]
+    }
+  ]
+}
+```
+
+### Step 3 — Iterate through ALL resource types
+
+Query each resource type separately to ensure nothing is missed. The resource types to iterate are:
+
+1. `microsoft.powerapps/canvasapps` — Canvas apps
+2. `microsoft.powerapps/modeldrivenapps` — Model-driven apps
+3. `microsoft.powerapps/codeapps` — Code apps
+4. `microsoft.powerapps/apps` — App Builder apps
+5. `microsoft.powerautomate/cloudflows` — Cloud flows
+6. `microsoft.powerautomate/agentflows` — Agent flows
+7. `microsoft.powerautomate/m365agentflows` — Workflow agent flows
+8. `microsoft.copilotstudio/agents` — Copilot Studio agents
+
+For each resource type, run a query like:
+
+```json
+{
+  "TableName": "PowerPlatformResources",
+  "Options": { "Top": 1000, "Skip": 0, "SkipToken": "" },
+  "Clauses": [
+    {
+      "$type": "where",
+      "FieldName": "type",
+      "Operator": "==",
+      "Values": ["'<resource_type>'"]
+    },
+    {
+      "$type": "project",
+      "FieldList": [
+        "name",
+        "type",
+        "location",
+        "properties.displayName",
+        "properties.createdAt",
+        "properties.createdBy",
+        "properties.ownerId",
+        "properties.environmentId",
+        "properties.lastModifiedAt",
+        "properties.lastModifiedBy"
+      ]
+    },
+    {
+      "$type": "orderby",
+      "FieldNamesAscDesc": {
+        "tostring(properties.createdAt)": "desc"
+      }
+    }
+  ]
+}
+```
+
+**Always paginate**: for each query, keep requesting with `skipToken` until `resultTruncated` is `0` or no more results are returned.
+
+### Step 4 — Cross-reference environments
+
+After collecting all resources and environments, join them client-side by matching each resource's `properties.environmentId` to the environment `name`. This gives you environment display name, type, region, and managed status for every resource.
+
+Alternatively, use the default admin center join query (documented above) if a single combined query is preferred — but still paginate fully.
+
+### Step 5 — Aggregate per environment
+
+For each environment, compute:
+- Total resource count
+- Count by resource type (apps, flows, agents)
+- Most recently created / modified resource
+- Whether it is a managed environment
+
 ## Building the report
 
-After querying the data:
+After collecting all data:
 
 1. Summarize key metrics: total resources by type, resources per environment, recently created/modified items
 2. Invoke the **frontend-design** skill to generate a self-contained HTML report with:
    - A hero section with headline stats (total apps, flows, agents, environments)
    - A breakdown by resource type (charts or styled tables)
-   - A breakdown by environment with environment type badges
+   - An environment-by-environment breakdown showing each environment's name, type, region, managed status, and its resource counts
    - A timeline of recently created or modified resources
-   - Filters or tabs for drilling into each resource type
+   - Filters or tabs for drilling into each resource type and each environment
 3. The report should be a single `.html` file that works offline with no external dependencies
