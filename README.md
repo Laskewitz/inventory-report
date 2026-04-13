@@ -50,17 +50,17 @@ Reports include headline stats, health scores, critical findings with risk expla
 
 ## What's included
 
-### Skills (`.agents/skills/`)
+### Skills (`.github/skills/`)
 
 Skills are portable, auto-discovered capabilities that follow the [Agent Skills open standard](https://agentskills.io).
 
 | Skill | Description |
 | --- | --- |
-| [inventory-report](.agents/skills/inventory-report/SKILL.md) | Generate a self-contained HTML report. Collects data from the inventory API and Power Platform CLI, analyzes governance gaps, and uses the frontend-design skill to produce a polished visual document saved under `reports/YYYYMMDD/HHmm/`. |
-| [inventory-analysis](.agents/skills/inventory-analysis/SKILL.md) | Output findings as structured markdown directly in GitHub Copilot CLI or Chat. Same data collection and analysis — no file output. |
-| [frontend-design](.agents/skills/frontend-design/SKILL.md) | Generate distinctive, production-grade HTML interfaces. Used by the inventory-report skill to render the final report. |
+| [inventory-report](.github/skills/inventory-report/SKILL.md) | Generate a self-contained HTML report. Collects data from the inventory API and Power Platform CLI, analyzes governance gaps, and uses the frontend-design skill to produce a polished visual document saved under `reports/YYYYMMDD/HHmm/`. |
+| [inventory-analysis](.github/skills/inventory-analysis/SKILL.md) | Output findings as structured markdown directly in GitHub Copilot CLI or Chat. Same data collection and analysis — no file output. |
+| [frontend-design](.github/skills/frontend-design/SKILL.md) | Generate distinctive, production-grade HTML interfaces. Used by the inventory-report skill to render the final report. |
 
-Both inventory skills share a common data reference: [`inventory-data.md`](.agents/skills/inventory-report/inventory-data.md) — the complete API reference, schema, data collection strategy, CLI commands, and analysis framework.
+Both inventory skills share a common data reference: [`inventory-data.md`](.github/skills/inventory-report/inventory-data.md) — the complete API reference, schema, data collection strategy, CLI commands, and analysis framework.
 
 ### Custom agent (`.github/agents/`)
 

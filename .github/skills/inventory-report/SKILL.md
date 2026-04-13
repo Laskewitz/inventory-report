@@ -32,7 +32,8 @@ Follow the data collection, analysis, and report structure documented in [invent
 After collecting and analyzing all data:
 
 1. Summarize key metrics: total resources by type, resources per environment, recently created/modified items
-2. Invoke the **frontend-design** skill to generate a self-contained HTML report. **YOU MUST** include the following features:
+2. **Use the sample template** at [`sample/inventory-report.html`](../../sample/inventory-report.html) as the **visual reference and starting point** for every report. Read this file first, then populate it with fresh data. Keep the same HTML structure, CSS theme variables, layout, tab navigation, and overall design. Do **not** reinvent the styling or layout on each run — only replace the data content. This ensures a consistent look across all generated reports.
+3. **YOU MUST** include the following features:
 
 ### ⚠️ REQUIRED: Dark / Light Mode Toggle
 
