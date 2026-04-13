@@ -2,6 +2,14 @@
 
 This repository contains [Agent Skills](https://agentskills.io), prompt files, and a custom agent for generating Power Platform inventory reports and governance analysis. Use these with GitHub Copilot to query your Power Platform estate, analyze settings for risks, and produce polished reports — all from within VS Code or the GitHub Copilot CLI.
 
+## Sample report
+
+Reports include headline stats, health scores, critical findings with risk explanations, and prioritized recommendations with exact `pac` CLI commands to fix each issue. Dark mode is the default, with a toggle for light mode.
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Sample report in dark mode](docs/images/report-dark.png) | ![Sample report in light mode](docs/images/report-light.png) |
+
 ## What's included
 
 ### Skills (`.agents/skills/`)
