@@ -518,25 +518,82 @@ You can also filter for specific settings:
 pac env list-settings --environment "<environment-id-or-url>" --filter "audit"
 ```
 
-Iterate through ALL environments and collect their settings. Key settings to highlight in the report include:
-- `isabortenabled` — whether auditing is enabled
-- `maxuploadfilesize` — maximum file upload size
-- `blockedattachments` — blocked file extensions
-- `sessiontimeoutenabled` / `sessiontimeoutinsecs` — session timeout configuration
-- `plugintracelogsetting` — plugin trace log level
+Iterate through ALL environments and collect their settings. The command returns hundreds of settings — do NOT list them all in the report. Instead, analyze the output and only surface settings that represent a gap or risk. See the analysis section below for what to flag.
+
+## Analyzing the data
+
+After collecting all data, analyze EVERY piece of output from the PAC commands and the inventory API. Do not just present raw data — interpret it, flag issues, explain WHY each issue matters, and provide actionable next steps.
+
+### Tenant settings analysis
+
+Review every tenant setting and flag deviations from best practices:
+
+| Setting area | What to check | Why it matters | Recommended action |
+|---|---|---|---|
+| Environment creation | Who can create production/sandbox environments | Unrestricted creation leads to environment sprawl, increases licensing costs, and creates ungoverned shadow IT | Restrict to admins only |
+| Trial environments | Whether trials are enabled for everyone | Trials can contain business data that expires and gets deleted, causing data loss | Limit trial creation or set expiration policies |
+| Sharing controls | Canvas app and flow sharing limits | Oversharing exposes sensitive business logic and data connections to unintended users | Set maximum share limits per environment |
+| AI features | Copilot and AI Builder settings | Uncontrolled AI feature rollout may process data in ways that violate compliance policies | Review and explicitly enable/disable per compliance requirements |
+| Guest access | Whether guest users can access Power Platform | External users accessing internal automations and data creates security and compliance risks | Restrict or audit guest access |
+
+### DLP policy analysis
+
+For each DLP policy, analyze:
+
+| What to check | Why it matters | Recommended action |
+|---|---|---|
+| Environments without any DLP policy coverage | Unprotected environments allow makers to combine any connectors, risking data exfiltration (e.g., SharePoint → personal email) | Create at least a baseline DLP policy covering all environments |
+| Policies with overly permissive Business connector groups | Sensitive connectors (e.g., SQL, Dataverse, SharePoint) in the same group as social/external connectors allow data to flow between them | Separate sensitive data connectors from external-facing connectors |
+| Blocked connectors | Whether high-risk connectors (HTTP, custom connectors) are blocked where appropriate | Block HTTP and custom connectors in environments that don't need them to prevent arbitrary external API calls |
+| Overlapping policies on the same environment | Multiple policies on one environment create confusion about which rules apply (most restrictive wins) | Consolidate overlapping policies for clarity |
+| Default environment policy | Whether the default environment (where all users have Maker access) has strict DLP | The default environment is the highest risk because every licensed user can build in it | Apply the most restrictive DLP policy to the default environment |
+
+### Environment settings analysis
+
+For each environment, analyze these key settings and flag issues:
+
+| Setting | Why it matters | What to flag |
+|---|---|---|
+| Auditing (`isauditenabled`) | Auditing tracks who did what and when — required for compliance (SOC2, ISO 27001, GDPR) and incident investigation | Flag any environment where auditing is **disabled** |
+| Session timeout (`sessiontimeoutenabled` / `sessiontimeoutinsecs`) | Inactive sessions left open are a session hijacking risk, especially on shared devices | Flag environments without session timeout or with timeouts longer than 60 minutes |
+| File upload size (`maxuploadfilesize`) | Large upload limits increase storage costs and can be abused to exfiltrate data via attachments | Flag environments with limits above 32 MB |
+| Blocked attachments (`blockedattachments`) | Executable file types uploaded to Dataverse can be used for social engineering or malware distribution | Flag environments that do not block `.exe`, `.bat`, `.cmd`, `.js`, `.vbs` |
+| Plugin trace logs (`plugintracelogsetting`) | Trace logs in production consume storage and may expose sensitive data in log entries | Flag production environments with trace logging set to **All** |
+| Email settings | Misconfigured email integration can cause data leaks or delivery failures | Flag environments with server-side sync errors or unmonitored mailboxes |
+
+### Inventory analysis
+
+Analyze the resource data from the inventory API:
+
+| What to check | Why it matters | Recommended action |
+|---|---|---|
+| Resources in the default environment | The default environment is not meant for production workloads — it has the weakest governance and every user has access | Move production apps/flows out of the default environment |
+| Orphaned resources (owner no longer active) | Apps and flows owned by departed employees may stop working or become unmanageable, and no one receives error notifications | Reassign ownership or decommission |
+| Quarantined apps/agents | Quarantined resources are blocked from running, indicating a policy violation or security concern | Investigate why each resource was quarantined and resolve or remove |
+| Environments with no resources | Empty environments consume capacity and licensing entitlements for no business value | Delete or repurpose unused environments |
+| Environments without Managed Environment enabled | Non-managed environments lack admin visibility, usage insights, and policy enforcement capabilities | Enable Managed Environments for all production and shared environments |
+| Resources created outside Copilot Studio / standard tools | Resources with unexpected `createdIn` values may indicate shadow IT or unauthorized tooling | Review and bring under governance |
+| Stale resources (not modified in 6+ months) | Unmaintained apps and flows accumulate technical debt, may reference deprecated connectors, and waste capacity | Review with business owners — archive or decommission |
+| High resource count per environment | Too many resources in one environment makes governance harder and increases the blast radius of a security incident | Consider splitting into purpose-specific environments |
 
 ## Building the report
 
-After collecting all data:
+After collecting and analyzing all data:
 
 1. Summarize key metrics: total resources by type, resources per environment, recently created/modified items
 2. Invoke the **frontend-design** skill to generate a self-contained HTML report with:
    - A hero section with headline stats (total apps, flows, agents, environments)
+   - A **health score** or risk summary (critical / warning / healthy counts)
    - A breakdown by resource type (charts or styled tables)
    - An environment-by-environment breakdown showing each environment's name, type, region, managed status, and its resource counts
    - A timeline of recently created or modified resources
    - Filters or tabs for drilling into each resource type and each environment
-   - A tenant governance section showing key tenant settings
-   - A DLP policy overview showing all policies, their environment scopes, and connector classifications
-   - An environment settings section highlighting key configuration per environment (auditing, session timeouts, upload limits, etc.)
+   - A tenant governance section showing key tenant settings with **flagged issues and why they matter**
+   - A DLP policy overview showing all policies, their environment scopes, connector classifications, and **coverage gaps**
+   - An environment settings section highlighting key configuration per environment with **flags for non-compliant settings**
+   - A **Recommendations** section with prioritized next steps, each including:
+     - What to fix
+     - Why it needs to be fixed (the business/security/compliance risk)
+     - How to fix it (specific pac CLI commands or admin center actions)
+     - Priority level (Critical / High / Medium / Low)
 3. The report should be a single `.html` file that works offline with no external dependencies
