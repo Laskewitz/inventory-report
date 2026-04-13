@@ -448,6 +448,18 @@ Use Power Platform CLI to retrieve tenant-wide governance settings:
 pac admin list-tenant-settings
 ```
 
+Optionally save the output to a JSON file for processing:
+
+```bash
+pac admin list-tenant-settings --settings-file tenant-settings.json
+```
+
+**Parameters:**
+
+| Parameter | Alias | Description |
+|---|---|---|
+| `--settings-file` | `-s` | Path to a `.json` file to output tenant settings |
+
 This returns the full tenant settings JSON including security, governance, and feature flags. Include key settings in the report (e.g., who can create environments, sharing restrictions, AI features enabled).
 
 ### Step 7 — Collect DLP policies
@@ -458,11 +470,19 @@ First, list all DLP policies in the tenant:
 pac admin dlp-policy list
 ```
 
+This command takes no parameters and returns all DLP policies with their policy name (GUID) and display name.
+
 Then, for each policy returned, get the full policy details including connector classifications:
 
 ```bash
 pac admin dlp-policy show --policy-name "<policy-name-guid>"
 ```
+
+**Parameters:**
+
+| Parameter | Alias | Required | Description |
+|---|---|---|---|
+| `--policy-name` | `-pn` | Yes | The policy name (GUID identifier) |
 
 Iterate through ALL policies. Each policy contains:
 - Policy display name and description
@@ -483,6 +503,13 @@ For each environment discovered in Step 1, retrieve its Dataverse organization s
 pac env list-settings --environment "<environment-id-or-url>"
 ```
 
+**Parameters:**
+
+| Parameter | Alias | Description |
+|---|---|---|
+| `--environment` | `-env` | Environment ID, URL, unique name, or partial name. Defaults to the active auth profile environment. |
+| `--filter` | `-f` | Show only settings containing filter criteria |
+
 This returns all columns from the Dataverse [Organization table](https://learn.microsoft.com/power-apps/developer/data-platform/reference/entities/organization) — a single-row table with environment-level configuration values.
 
 You can also filter for specific settings:
@@ -497,7 +524,6 @@ Iterate through ALL environments and collect their settings. Key settings to hig
 - `blockedattachments` — blocked file extensions
 - `sessiontimeoutenabled` / `sessiontimeoutinsecs` — session timeout configuration
 - `plugintracelogsetting` — plugin trace log level
-- `isabortenabled` — whether SLA abort is enabled
 
 ## Building the report
 
