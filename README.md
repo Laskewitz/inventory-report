@@ -6,9 +6,47 @@ This repository contains [Agent Skills](https://agentskills.io), prompt files, a
 
 Reports include headline stats, health scores, critical findings with risk explanations, and prioritized recommendations with exact `pac` CLI commands to fix each issue. Dark mode is the default, with a toggle for light mode.
 
+### Overview
+
 | Dark mode (default) | Light mode |
 | --- | --- |
-| ![Sample report in dark mode](docs/images/report-dark.png) | ![Sample report in light mode](docs/images/report-light.png) |
+| ![Overview – dark](assets/images/report-overview-dark.png) | ![Overview – light](assets/images/report-overview-light.png) |
+
+### Environments
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Environments – dark](assets/images/report-environments-dark.png) | ![Environments – light](assets/images/report-environments-light.png) |
+
+### Resources
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Resources – dark](assets/images/report-resources-dark.png) | ![Resources – light](assets/images/report-resources-light.png) |
+
+### Tenant Governance
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Tenant Governance – dark](assets/images/report-governance-dark.png) | ![Tenant Governance – light](assets/images/report-governance-light.png) |
+
+### DLP Policies
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![DLP Policies – dark](assets/images/report-dlp-dark.png) | ![DLP Policies – light](assets/images/report-dlp-light.png) |
+
+### Environment Settings
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Environment Settings – dark](assets/images/report-env-settings-dark.png) | ![Environment Settings – light](assets/images/report-env-settings-light.png) |
+
+### Recommendations
+
+| Dark mode (default) | Light mode |
+| --- | --- |
+| ![Recommendations – dark](assets/images/report-recommendations-dark.png) | ![Recommendations – light](assets/images/report-recommendations-light.png) |
 
 ## What's included
 
@@ -112,6 +150,17 @@ pac auth create
 ```
 
 This opens a browser for interactive sign-in. Your account needs Power Platform Admin or Global Admin permissions to retrieve tenant settings and DLP policies.
+
+### 4. Playwright CLI (for report screenshots — optional)
+
+The screenshot script (`scripts/take-screenshots.mjs`) uses [Playwright](https://playwright.dev/) to capture full-page screenshots of the generated report.
+
+**Install:**
+
+```bash
+npm install -g @playwright/cli@latest
+npx playwright install chromium
+```
 
 ## Getting started
 
