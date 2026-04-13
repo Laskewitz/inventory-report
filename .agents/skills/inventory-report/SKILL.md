@@ -475,6 +475,30 @@ Include in the report:
 - Which environments are covered by which policies
 - A summary of blocked/restricted connectors per policy
 
+### Step 8 — Collect environment settings
+
+For each environment discovered in Step 1, retrieve its Dataverse organization settings:
+
+```bash
+pac env list-settings --environment "<environment-id-or-url>"
+```
+
+This returns all columns from the Dataverse [Organization table](https://learn.microsoft.com/power-apps/developer/data-platform/reference/entities/organization) — a single-row table with environment-level configuration values.
+
+You can also filter for specific settings:
+
+```bash
+pac env list-settings --environment "<environment-id-or-url>" --filter "audit"
+```
+
+Iterate through ALL environments and collect their settings. Key settings to highlight in the report include:
+- `isabortenabled` — whether auditing is enabled
+- `maxuploadfilesize` — maximum file upload size
+- `blockedattachments` — blocked file extensions
+- `sessiontimeoutenabled` / `sessiontimeoutinsecs` — session timeout configuration
+- `plugintracelogsetting` — plugin trace log level
+- `isabortenabled` — whether SLA abort is enabled
+
 ## Building the report
 
 After collecting all data:
@@ -488,4 +512,5 @@ After collecting all data:
    - Filters or tabs for drilling into each resource type and each environment
    - A tenant governance section showing key tenant settings
    - A DLP policy overview showing all policies, their environment scopes, and connector classifications
+   - An environment settings section highlighting key configuration per environment (auditing, session timeouts, upload limits, etc.)
 3. The report should be a single `.html` file that works offline with no external dependencies
