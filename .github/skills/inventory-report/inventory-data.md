@@ -152,7 +152,7 @@ POST {PowerPlatformAPI url}/resourcequery/resources/query?api-version=2024-10-01
 | `properties.createdAt` | datetime | Creation timestamp |
 | `properties.createdBy` | string | Creator object ID |
 
-### Canvas apps / Model-driven apps / Code apps / App Builder apps
+### Canvas apps
 
 | Field | Type | Description |
 |---|---|---|
@@ -162,14 +162,61 @@ POST {PowerPlatformAPI url}/resourcequery/resources/query?api-version=2024-10-01
 | `properties.lastModifiedBy` | string | Last modifier object ID |
 | `properties.isQuarantined` | boolean | Whether the app is quarantined |
 
-Model-driven apps also have:
-- `properties.appModuleId` — Dataverse app module ID
-- `properties.logicalName` — Dataverse logical name
+### Model-driven apps
 
-Code apps also have:
-- `properties.subType` — `byocApp` or `vibeApp`
+| Field | Type | Description |
+|---|---|---|
+| `properties.ownerId` | string | Owner object ID |
+| `properties.environmentId` | string | Environment identifier |
+| `properties.lastModifiedAt` | datetime | Last modified timestamp |
+| `properties.lastModifiedBy` | string | Last modifier object ID |
+| `properties.isQuarantined` | boolean | Whether the app is quarantined |
+| `properties.appModuleId` | string | Dataverse app module ID |
+| `properties.logicalName` | string | Dataverse logical name |
 
-### Cloud flows / Agent flows / Workflow agent flows
+### Code apps
+
+| Field | Type | Description |
+|---|---|---|
+| `properties.ownerId` | string | Owner object ID |
+| `properties.environmentId` | string | Environment identifier |
+| `properties.lastModifiedAt` | datetime | Last modified timestamp |
+| `properties.lastModifiedBy` | string | Last modifier object ID |
+| `properties.isQuarantined` | boolean | Whether the app is quarantined |
+| `properties.subType` | string | Code app subtype: `byocApp` or `vibeApp` |
+
+### App Builder apps
+
+| Field | Type | Description |
+|---|---|---|
+| `properties.ownerId` | string | Owner object ID |
+| `properties.environmentId` | string | Environment identifier |
+| `properties.lastModifiedAt` | datetime | Last modified timestamp |
+| `properties.lastModifiedBy` | string | Last modifier object ID |
+| `properties.isQuarantined` | boolean | Whether the app is quarantined |
+| `properties.subType` | string | App subtype (currently `appBuilderApp`) |
+
+### Cloud flows
+
+| Field | Type | Description |
+|---|---|---|
+| `properties.ownerId` | string | Owner object ID |
+| `properties.environmentId` | string | Environment identifier |
+| `properties.lastModifiedAt` | datetime | Last modified timestamp |
+| `properties.lastModifiedBy` | string | Last modifier object ID |
+| `properties.workflowEntityId` | string | Dataverse workflow entity ID |
+
+### Agent flows
+
+| Field | Type | Description |
+|---|---|---|
+| `properties.ownerId` | string | Owner object ID |
+| `properties.environmentId` | string | Environment identifier |
+| `properties.lastModifiedAt` | datetime | Last modified timestamp |
+| `properties.lastModifiedBy` | string | Last modifier object ID |
+| `properties.workflowEntityId` | string | Dataverse workflow entity ID |
+
+### Workflow agent flows (M365 agent flows)
 
 | Field | Type | Description |
 |---|---|---|
@@ -181,22 +228,38 @@ Code apps also have:
 
 ### Copilot Studio agents
 
+#### Core properties
+
 | Field | Type | Description |
 |---|---|---|
 | `properties.ownerId` | string | Owner object ID |
 | `properties.environmentId` | string | Environment identifier |
-| `properties.lastPublishedAt` | datetime | Last published timestamp |
-| `properties.createdIn` | string | Authoring tool (Copilot Studio / M365 Copilot Agent Builder) |
+| `properties.lastPublishedAt` | datetime | Last published timestamp (empty if still in draft) |
+| `properties.createdIn` | string | Authoring tool: `Copilot Studio` or `Microsoft 365 Copilot Agent Builder` |
 | `properties.schemaName` | string | Dataverse schema name |
-| `properties.isQuarantined` | boolean | Whether the agent is quarantined |
-| `properties.isManaged` | boolean | Part of a managed solution |
-| `properties.botId` | string | CDS bot ID |
-| `properties.entraAppId` | string | Entra App Registration ID (legacy) |
-| `properties.entraAgentId` | string | Entra Agent Identity ID |
-| `properties.orchestration` | string | Classic or Generative |
-| `properties.model` | string | AI model (e.g. gpt-4o) |
-| `properties.authentication` | string | None, Microsoft Entra, Generic OAuth 2.0 |
-| `properties.channels` | array | Published channels |
+| `properties.isQuarantined` | boolean | Whether the agent is quarantined (Preview) |
+| `properties.quarantinedAt` | datetime | When the agent was last quarantined (Preview) |
+| `properties.isManaged` | boolean | Part of a managed solution (Preview) |
+
+#### Identity properties
+
+| Field | Type | Description | Available for |
+|---|---|---|---|
+| `properties.botId` | string | CDS bot ID in the environment | Copilot Studio agents, M365 Agent Builder agents |
+| `properties.entraAppId` | string | Entra App Registration ID (legacy) | Copilot Studio agents only |
+| `properties.entraAgentId` | string | Entra Agent Identity ID | Copilot Studio agents only |
+| `properties.entraAgentBlueprintId` | string | Entra Agent Blueprint ID | Copilot Studio agents only |
+
+> **Note:** `entraAppId` is a legacy identifier. Newer agents use `entraAgentId` and `entraAgentBlueprintId` instead. None of these identity properties apply to M365 Copilot Agent Builder agents.
+
+#### Configuration properties (Preview)
+
+| Field | Type | Description |
+|---|---|---|
+| `properties.orchestration` | string | Orchestration mode: `Classic` (topic-based dialog trees) or `Generative` (AI dynamically selects topics/actions) |
+| `properties.model` | string | AI model used by the agent (e.g. `gpt-4o`) |
+| `properties.authentication` | string | Auth mode: `None`, `Microsoft Entra`, or `Generic OAuth 2.0` |
+| `properties.channels` | array | Display names of published channels (e.g. `["Teams","SharePoint"]`) |
 
 ### Environments
 
@@ -263,10 +326,12 @@ This is the default query used by Power Platform admin center to get all resourc
       "Values": [
         "'microsoft.powerapps/canvasapps'",
         "'microsoft.powerapps/modeldrivenapps'",
+        "'microsoft.powerapps/codeapps'",
+        "'microsoft.powerapps/apps'",
         "'microsoft.powerautomate/cloudflows'",
-        "'microsoft.copilotstudio/agents'",
         "'microsoft.powerautomate/agentflows'",
-        "'microsoft.powerapps/codeapps'"
+        "'microsoft.powerautomate/m365agentflows'",
+        "'microsoft.copilotstudio/agents'"
       ]
     },
     {
@@ -560,3 +625,27 @@ Analyze the resource data from the inventory API. For every finding, describe th
 | Resources created outside Copilot Studio / standard tools | Resources with unexpected `createdIn` values may indicate shadow IT or unauthorized tooling | Review and bring under governance |
 | Stale resources (not modified in 6+ months) | Unmaintained apps and flows accumulate technical debt, may reference deprecated connectors, and waste capacity | Review with business owners — archive or decommission |
 | High resource count per environment | Too many resources in one environment makes governance harder and increases the blast radius of a security incident | Consider splitting into purpose-specific environments |
+
+### Storage capacity analysis
+
+After collecting storage capacity data (Step 9), analyze utilization and flag risks:
+
+| What to check | Why it matters | What to flag |
+|---|---|---|
+| Tenant-level utilization above 80% | Running out of storage blocks new record creation and can cause flow failures and app errors across all environments | Plan capacity add-on purchase or archive old data |
+| Single environment consuming >30% of tenant capacity | One environment dominating storage limits headroom for others and increases blast radius of data issues | Investigate large tables, archive historical data, or split workloads |
+| Log storage growing disproportionately | Excessive audit logs or plugin trace logs consume capacity without clear business value | Review plugin trace log settings, archive old audit logs, reduce async operation retention |
+| Environments with near-zero storage | Empty environments still consume a baseline allocation — combined with no resources, they waste capacity | Delete or repurpose unused environments |
+| File storage significantly larger than database | May indicate large attachments, images, or documents stored in Dataverse rather than SharePoint/Blob storage | Review attachment policies, consider moving files to SharePoint integration |
+
+### Licensing analysis
+
+After collecting licensing data (Step 10), analyze allocation and flag risks:
+
+| What to check | Why it matters | What to flag |
+|---|---|---|
+| License utilization above 85% | Running out of licenses blocks new user onboarding and can prevent existing users from accessing apps | Plan license procurement or reclaim unused licenses |
+| Licenses assigned to inactive users | Departed or inactive users holding licenses wastes budget and may indicate stale access | Reclaim licenses from users inactive for 90+ days |
+| Users with multiple overlapping licenses | Per-user and per-app licenses on the same user is redundant spending | Consolidate to the most cost-effective license type |
+| Capacity-based add-ons near limits | AI Builder credits, Power Pages capacity, or Dataverse storage add-ons running low can cause service disruptions | Monitor consumption trends and plan procurement |
+| Environments without sufficient license coverage | Users accessing apps in environments without proper licensing creates compliance risk | Ensure all active environments have appropriate license coverage |

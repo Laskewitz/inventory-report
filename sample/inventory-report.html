@@ -120,7 +120,7 @@ body {
 /* ── Hero ── */
 .hero {
   background: var(--hero-gradient);
-  padding: 60px 40px 50px;
+  padding: 80px 40px 50px;
   border-bottom: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
@@ -165,6 +165,7 @@ body {
   padding: 20px;
   text-align: center;
   transition: all 0.25s ease;
+  cursor: pointer;
 }
 .stat-card:hover {
   border-color: var(--accent);
@@ -285,6 +286,7 @@ tbody tr:hover { background: var(--bg-card-hover); }
 .badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
 .badge-critical { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
 .badge-info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 .env-type {
   display: inline-block;
@@ -309,7 +311,6 @@ tbody tr:hover { background: var(--bg-card-hover); }
 }
 
 .env-name { font-weight: 600; }
-.breakdown { font-size: 0.82rem; color: var(--text-secondary); }
 
 /* ── Bars ── */
 .bar-container {
@@ -343,32 +344,119 @@ tbody tr:hover { background: var(--bg-card-hover); }
 /* ── Recommendations ── */
 .rec-table td:first-child { font-family: 'JetBrains Mono', monospace; font-weight: 700; text-align: center; width: 40px; }
 
-/* ── Nav tabs ── */
-.nav-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0;
-  overflow-x: auto;
-}
-.nav-tab {
-  padding: 10px 18px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
+/* ── Navigation Drawer ── */
+.nav-burger {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  font-size: 22px;
   cursor: pointer;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  line-height: 1;
+}
+.nav-burger:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1100;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+.nav-backdrop.active { opacity: 1; visibility: visible; }
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  z-index: 1200;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 8px 0 32px rgba(0,0,0,0.3);
+}
+.nav-drawer.active { transform: translateX(0); }
+.nav-drawer-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-drawer-header h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.nav-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
-.nav-tab:hover { color: var(--text-primary); }
-.nav-tab.active {
+.nav-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.nav-items { padding: 12px; flex: 1; overflow-y: auto; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.nav-item:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.nav-item.active {
+  background: var(--accent-glow);
   color: var(--accent);
-  border-bottom-color: var(--accent);
   font-weight: 700;
+  border-color: var(--accent);
+}
+.nav-item .nav-icon {
+  font-size: 1.2rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
 }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
@@ -387,6 +475,317 @@ tbody tr:hover { background: var(--bg-card-hover); }
   .container { padding: 20px; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Environment Drilldown ── */
+.env-row { cursor: pointer; transition: background 0.15s ease; }
+.env-row:hover { background: var(--bg-card-hover) !important; }
+#env-table tbody tr { cursor: pointer; transition: background 0.15s ease; }
+#env-table tbody tr:hover { background: var(--bg-card-hover) !important; }
+.env-chevron {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; font-size: 0.55rem;
+  color: var(--text-muted); transition: transform 0.25s ease;
+  margin-right: 6px; flex-shrink: 0;
+}
+.env-row.expanded .env-chevron { transform: rotate(90deg); color: var(--accent); }
+.env-row.expanded { background: var(--accent-glow) !important; }
+.drilldown-row { display: none; }
+.drilldown-row.active { display: table-row; }
+.drilldown-row > td { padding: 0 !important; border-bottom: 2px solid var(--accent) !important; }
+.drilldown-panel {
+  background: var(--bg-secondary); padding: 20px 24px 24px;
+  border-left: 3px solid var(--accent);
+}
+.drilldown-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+}
+.drilldown-header h3 { font-size: 0.95rem; font-weight: 600; }
+.drilldown-count {
+  font-size: 0.78rem; color: var(--pill-text);
+  background: var(--pill-bg); padding: 4px 12px; border-radius: 20px;
+}
+.res-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.res-table thead th {
+  text-align: left; padding: 8px 12px; color: var(--text-muted);
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color); white-space: nowrap;
+}
+.res-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+.res-row { cursor: pointer; transition: background 0.15s ease; }
+.res-row:hover { background: var(--bg-card-hover); }
+.res-chevron {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; font-size: 0.5rem;
+  color: var(--text-muted); transition: transform 0.25s ease; margin-right: 4px;
+}
+.res-row.expanded .res-chevron { transform: rotate(90deg); color: var(--accent); }
+.res-detail-row { display: none; }
+.res-detail-row.active { display: table-row; }
+.res-detail-row > td {
+  padding: 4px 12px 16px !important;
+  background: var(--bg-input);
+}
+.detail-grid {
+  display: grid; grid-template-columns: 180px 1fr;
+  gap: 4px 16px; padding: 12px 16px;
+  font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;
+  background: var(--bg-card); border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+.detail-label { color: var(--text-muted); font-weight: 500; }
+.detail-value { color: var(--text-primary); word-break: break-all; }
+.no-resources {
+  color: var(--text-muted); font-style: italic;
+  padding: 20px; text-align: center;
+}
+
+/* ── Environment Deep-dive ── */
+.deepdive-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.deepdive-back:hover { opacity: 0.75; }
+.deepdive-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.deepdive-title { font-size: 1.3rem; font-weight: 700; }
+.deepdive-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.deepdive-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+}
+.deepdive-section {
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--card-shadow);
+}
+.deepdive-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.deepdive-section-header:hover { background: var(--bg-card-hover); }
+.deepdive-section.open > .deepdive-section-header .env-chevron {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+.deepdive-section-content {
+  display: none;
+  padding: 0 20px 20px;
+}
+.deepdive-section.open > .deepdive-section-content { display: block; }
+.deepdive-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.deepdive-detail-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.deepdive-detail-item .label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.deepdive-detail-item .value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+.env-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.9rem;
+}
+.env-arrow:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* ── Resource Type Cards ── */
+.res-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.res-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+.res-type-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: translateY(-2px);
+}
+.res-type-card.active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.res-type-card .res-type-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.res-type-card .res-type-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+.res-type-card .res-type-count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.res-type-card.active .res-type-label {
+  color: var(--accent);
+}
+.deepdive-res-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 4px 0;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ── Nav Groups ── */
+.nav-group-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  padding: 20px 16px 6px;
+  font-weight: 600;
+  border-top: 1px solid var(--border-color);
+}
+.nav-group-label:first-child { padding-top: 4px; border-top: none; }
+
+/* ── Table Search & Filters ── */
+.table-search {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 12px;
+}
+.table-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.table-search::placeholder { color: var(--text-muted); }
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.filter-pill:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+.filter-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.sortable-th:hover { color: var(--accent); }
+.sort-arrow {
+  font-size: 0.6rem;
+  margin-left: 3px;
+  opacity: 0.7;
+}
+.table-result-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
 </style>
 </head>
 <body>
@@ -394,109 +793,85 @@ tbody tr:hover { background: var(--bg-card-hover); }
 <!-- Theme Toggle -->
 <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" aria-label="Toggle theme">🌙</button>
 
+<!-- Navigation Drawer -->
+<button class="nav-burger" id="navBurger" title="Open navigation" aria-label="Open navigation">☰</button>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-header">
+    <h3>Navigation</h3>
+    <button class="nav-close" id="navClose" aria-label="Close navigation">✕</button>
+  </div>
+  <div class="nav-items">
+    <div class="nav-group-label">Overview</div>
+    <button class="nav-item active" data-tab="overview"><span class="nav-icon">📊</span>Dashboard</button>
+    <div class="nav-group-label">Environment Level</div>
+    <button class="nav-item" data-tab="environments"><span class="nav-icon">🌐</span>Environments</button>
+    <button class="nav-item" data-tab="resources"><span class="nav-icon">📦</span>Resources</button>
+    <div class="nav-group-label">Tenant Level</div>
+    <button class="nav-item" data-tab="governance"><span class="nav-icon">🏛️</span>Tenant Governance</button>
+    <button class="nav-item" data-tab="dlp"><span class="nav-icon">🛡️</span>DLP Policies</button>
+    <button class="nav-item" data-tab="storage"><span class="nav-icon">💾</span>Storage</button>
+    <button class="nav-item" data-tab="licensing"><span class="nav-icon">🔑</span>Licensing</button>
+    <div class="nav-group-label">Actions</div>
+    <button class="nav-item" data-tab="recommendations"><span class="nav-icon">🎯</span>Recommendations</button>
+  </div>
+</div>
+
 <!-- Hero -->
 <div class="hero">
   <h1>⚡ Power Platform Inventory Report</h1>
   <p class="subtitle">Tenant: <span class="tenant-name">contoso.onmicrosoft.com</span></p>
 
   <div class="stat-grid">
-    <div class="stat-card">
+    <div class="stat-card" data-action="tab:environments">
       <div class="stat-value">22</div>
       <div class="stat-label">Environments</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-action="filter:Copilot Studio Agents">
       <div class="stat-value">68</div>
       <div class="stat-label">Copilot Agents</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-action="filter:Model-driven Apps">
       <div class="stat-value">81</div>
       <div class="stat-label">Model-driven Apps</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-action="filter:Canvas Apps">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Canvas Apps</div>
+    </div>
+    <div class="stat-card" data-action="filter:Flows">
       <div class="stat-value">18</div>
       <div class="stat-label">Flows</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-action="filter:Code">
       <div class="stat-value">10</div>
       <div class="stat-label">Code / Builder Apps</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" data-action="tab:environments:managed">
       <div class="stat-value">5</div>
       <div class="stat-label">Managed Envs</div>
     </div>
+    <div class="stat-card" data-action="tab:storage">
+      <div class="stat-value">16.4 GB</div>
+      <div class="stat-label">Storage Used</div>
+    </div>
+    <div class="stat-card" data-action="tab:licensing">
+      <div class="stat-value">150</div>
+      <div class="stat-label">Licenses</div>
+    </div>
   </div>
 
-  <div class="health-bar">
-    <div class="health-item health-critical">🔴 5 Critical</div>
-    <div class="health-item health-warning">🟡 4 Warnings</div>
-    <div class="health-item health-success">🟢 3 Healthy</div>
-  </div>
+
 </div>
 
 <div class="container">
 
-  <!-- Navigation -->
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
-    <button class="nav-tab" onclick="showTab('environments')">Environments</button>
-    <button class="nav-tab" onclick="showTab('resources')">Resources</button>
-    <button class="nav-tab" onclick="showTab('governance')">Tenant Governance</button>
-    <button class="nav-tab" onclick="showTab('dlp')">DLP Policies</button>
-    <button class="nav-tab" onclick="showTab('env-settings')">Environment Settings</button>
-    <button class="nav-tab" onclick="showTab('recommendations')">Recommendations</button>
-  </div>
-
   <!-- Overview Tab -->
   <div id="tab-overview" class="tab-content active">
     <div class="section">
-      <div class="section-header"><span class="icon">📊</span><h2>Resource Breakdown</h2></div>
-      <div class="card">
-        <table>
-          <thead><tr><th>Resource Type</th><th>Count</th><th>Distribution</th><th>Share</th></tr></thead>
-          <tbody><tr>
-        <td>📊 Model-driven Apps</td>
-        <td class="num">81</td>
-        <td><div class="bar-container"><div class="bar" style="width:46%"></div></div></td>
-        <td class="num">46%</td>
-    </tr><tr>
-        <td>🧠 Copilot Studio Agents</td>
-        <td class="num">68</td>
-        <td><div class="bar-container"><div class="bar" style="width:38%"></div></div></td>
-        <td class="num">38%</td>
-    </tr><tr>
-        <td>🤖 Agent Flows</td>
-        <td class="num">9</td>
-        <td><div class="bar-container"><div class="bar" style="width:5%"></div></div></td>
-        <td class="num">5%</td>
-    </tr><tr>
-        <td>⚡ Cloud Flows</td>
-        <td class="num">8</td>
-        <td><div class="bar-container"><div class="bar" style="width:5%"></div></div></td>
-        <td class="num">5%</td>
-    </tr><tr>
-        <td>🏗️ App Builder Apps</td>
-        <td class="num">6</td>
-        <td><div class="bar-container"><div class="bar" style="width:3%"></div></div></td>
-        <td class="num">3%</td>
-    </tr><tr>
-        <td>💻 Code Apps</td>
-        <td class="num">4</td>
-        <td><div class="bar-container"><div class="bar" style="width:2%"></div></div></td>
-        <td class="num">2%</td>
-    </tr><tr>
-        <td>🔄 M365 Agent Flows</td>
-        <td class="num">1</td>
-        <td><div class="bar-container"><div class="bar" style="width:1%"></div></div></td>
-        <td class="num">1%</td>
-    </tr></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section">
       <div class="section-header"><span class="icon">🕐</span><h2>Recently Created Resources</h2></div>
       <div class="card">
-        <table>
+        <table id="recent-table">
           <thead><tr><th>Name</th><th>Type</th><th>Environment</th><th>Created</th></tr></thead>
           <tbody><tr>
         <td>🧠 BC Agent</td>
@@ -566,6 +941,7 @@ tbody tr:hover { background: var(--bg-card-hover); }
 
   <!-- Environments Tab -->
   <div id="tab-environments" class="tab-content">
+    <div id="env-list-view">
     <div class="section">
       <div class="section-header"><span class="icon">🌐</span><h2>Environment Inventory (22 environments)</h2></div>
       <p style="color:var(--text-secondary);margin-bottom:16px;">
@@ -573,397 +949,155 @@ tbody tr:hover { background: var(--bg-card-hover); }
         1 environment group (Personal Environments)
       </p>
       <div class="card" style="overflow-x:auto;">
-        <table>
-          <thead><tr><th>Environment</th><th>Type</th><th>Managed</th><th>Region</th><th>Resources</th><th>Breakdown</th></tr></thead>
+        <table id="env-table">
+          <thead><tr><th>Environment</th><th>Type</th><th>Managed</th><th>Region</th><th>Resources</th><th style="width:40px"></th></tr></thead>
           <tbody><tr>
         <td class="env-name">Agent Academy Commander (Morgan Chen)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">37</td>
-        <td class="breakdown">Agents: 28, Apps: 9</td>
     </tr><tr>
         <td class="env-name">dev-sandbox</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">14</td>
-        <td class="breakdown">Agents: 5, Apps: 5, Flows: 3, Flows: 1</td>
     </tr><tr>
         <td class="env-name">user-agent-academy</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">13</td>
-        <td class="breakdown">Apps: 5, Flows: 5, Agents: 3</td>
     </tr><tr>
         <td class="env-name">Code Apps (Morgan Chen)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">13</td>
-        <td class="breakdown">Agents: 5, Apps: 4, Apps: 3, Flows: 1</td>
     </tr><tr>
         <td class="env-name">Workshop SYD</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">12</td>
-        <td class="breakdown">Agents: 5, Apps: 4, Flows: 2, Flows: 1</td>
     </tr><tr>
         <td class="env-name">Workshop26 BRK431 (rsmith)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">10</td>
-        <td class="breakdown">Agents: 5, Apps: 4, Flows: 1</td>
     </tr><tr>
         <td class="env-name">user-dev</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">8</td>
-        <td class="breakdown">Agents: 3, Apps: 3, Flows: 2</td>
     </tr><tr>
         <td class="env-name">Taylor Kim</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-success">✓ Managed</span></td>
         <td>unitedstates</td>
         <td class="num">8</td>
-        <td class="breakdown">Agents: 3, Apps: 3, Apps: 1, Flows: 1</td>
     </tr><tr>
         <td class="env-name">Alex Johnson</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-success">✓ Managed</span></td>
         <td>unitedstates</td>
         <td class="num">7</td>
-        <td class="breakdown">Agents: 4, Apps: 3</td>
     </tr><tr>
         <td class="env-name">Workshop26 BRK431 (mchen)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">7</td>
-        <td class="breakdown">Agents: 3, Apps: 3, Flows: 1</td>
     </tr><tr>
         <td class="env-name">Contoso Platform (default)</td>
         <td><span class="env-type env-type-default">Default</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">5</td>
-        <td class="breakdown">Apps: 3, Agents: 2</td>
     </tr><tr>
         <td class="env-name">LabTest1</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">4</td>
-        <td class="breakdown">Apps: 4</td>
     </tr><tr>
         <td class="env-name">Alex Johnson (Preview)</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-success">✓ Managed</span></td>
         <td>unitedstates</td>
         <td class="num">4</td>
-        <td class="breakdown">Apps: 3, Agents: 1</td>
     </tr><tr>
         <td class="env-name">Morgan Chen</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-success">✓ Managed</span></td>
         <td>unitedstates</td>
         <td class="num">4</td>
-        <td class="breakdown">Apps: 3, Agents: 1</td>
     </tr><tr>
         <td class="env-name">GenPages (Morgan Chen)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">4</td>
-        <td class="breakdown">Apps: 4</td>
     </tr><tr>
         <td class="env-name">dev-cs-academy</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">Microsoft 365</td>
         <td><span class="env-type env-type-production">Production</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">Jordan Lee</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-success">✓ Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">PowerPagesDeveloper-033126-184711</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">Workshop (Morgan Chen)</td>
         <td><span class="env-type env-type-sandbox">Sandbox</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">Team Demos</td>
         <td><span class="env-type env-type-production">Production</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">3</td>
-        <td class="breakdown">Apps: 3</td>
     </tr><tr>
         <td class="env-name">PowerPagesDeveloper-033126-185220</td>
         <td><span class="env-type env-type-developer">Developer</span></td>
         <td><span class="badge badge-warning">Not Managed</span></td>
         <td>unitedstates</td>
         <td class="num">0</td>
-        <td class="breakdown"><span class="text-muted">No resources</span></td>
     </tr></tbody>
         </table>
       </div>
     </div>
+    </div>
+    <div id="env-deepdive-view" style="display:none;"></div>
   </div>
 
   <!-- Resources Tab -->
   <div id="tab-resources" class="tab-content">
     <div class="section">
-      <div class="section-header"><span class="icon">📦</span><h2>All Resources (177 total)</h2></div>
-      <div class="card">
-        <p style="color:var(--text-secondary);margin-bottom:16px;">Showing resource counts per environment, sorted by total resources.</p>
-        <table>
-          <thead><tr><th>Environment</th><th>Agents</th><th>Model-driven</th><th>Cloud Flows</th><th>Agent Flows</th><th>Code Apps</th><th>Builder Apps</th><th>M365 Flows</th><th>Total</th></tr></thead>
-          <tbody><tr>
-        <td class="env-name">Agent Academy Commander (Morgan Chen)</td>
-        <td class="num">28</td>
-        <td class="num">9</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">37</td>
-    </tr><tr>
-        <td class="env-name">dev-sandbox</td>
-        <td class="num">5</td>
-        <td class="num">5</td>
-        <td class="num">3</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">14</td>
-    </tr><tr>
-        <td class="env-name">Code Apps (Morgan Chen)</td>
-        <td class="num">5</td>
-        <td class="num">4</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">13</td>
-    </tr><tr>
-        <td class="env-name">user-agent-academy</td>
-        <td class="num">3</td>
-        <td class="num">5</td>
-        <td class="num">—</td>
-        <td class="num">5</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">13</td>
-    </tr><tr>
-        <td class="env-name">Workshop SYD</td>
-        <td class="num">5</td>
-        <td class="num">4</td>
-        <td class="num">2</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">12</td>
-    </tr><tr>
-        <td class="env-name">Workshop26 BRK431 (rsmith)</td>
-        <td class="num">5</td>
-        <td class="num">4</td>
-        <td class="num">—</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">10</td>
-    </tr><tr>
-        <td class="env-name">Unknown</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">6</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">9</td>
-    </tr><tr>
-        <td class="env-name">Taylor Kim</td>
-        <td class="num">3</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">1</td>
-        <td class="num" style="font-weight:700;">8</td>
-    </tr><tr>
-        <td class="env-name">user-dev</td>
-        <td class="num">3</td>
-        <td class="num">3</td>
-        <td class="num">2</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">8</td>
-    </tr><tr>
-        <td class="env-name">Alex Johnson</td>
-        <td class="num">4</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">7</td>
-    </tr><tr>
-        <td class="env-name">Workshop26 BRK431 (mchen)</td>
-        <td class="num">3</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">1</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">7</td>
-    </tr><tr>
-        <td class="env-name">Contoso Platform (default)</td>
-        <td class="num">2</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">5</td>
-    </tr><tr>
-        <td class="env-name">LabTest1</td>
-        <td class="num">—</td>
-        <td class="num">4</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">4</td>
-    </tr><tr>
-        <td class="env-name">GenPages (Morgan Chen)</td>
-        <td class="num">—</td>
-        <td class="num">4</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">4</td>
-    </tr><tr>
-        <td class="env-name">Morgan Chen</td>
-        <td class="num">1</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">4</td>
-    </tr><tr>
-        <td class="env-name">Alex Johnson (Preview)</td>
-        <td class="num">1</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">4</td>
-    </tr><tr>
-        <td class="env-name">PowerPagesDeveloper-033126-184711</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr><tr>
-        <td class="env-name">Jordan Lee</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr><tr>
-        <td class="env-name">Microsoft 365</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr><tr>
-        <td class="env-name">Team Demos</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr><tr>
-        <td class="env-name">Workshop (Morgan Chen)</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr><tr>
-        <td class="env-name">dev-cs-academy</td>
-        <td class="num">—</td>
-        <td class="num">3</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" style="font-weight:700;">3</td>
-    </tr></tbody></table></div></div></div>
+      <div class="section-header"><span class="icon">📦</span><h2>All Resources</h2></div>
+      <div class="card" id="all-resources-card"></div>
+    </div>
+  </div>
 
   <!-- Governance Tab -->
   <div id="tab-governance" class="tab-content">
@@ -1051,37 +1185,77 @@ tbody tr:hover { background: var(--bg-card-hover); }
     </div>
   </div>
 
-  <!-- Environment Settings Tab -->
-  <div id="tab-env-settings" class="tab-content">
+
+  <!-- Storage Tab -->
+  <div id="tab-storage" class="tab-content">
     <div class="section">
-      <div class="section-header"><span class="icon">⚙️</span><h2>Environment Settings Analysis</h2></div>
-      <p style="color:var(--text-secondary);margin-bottom:20px;">Settings sampled from: Default environment, Team Demos (Production), Alex Johnson (Developer)</p>
-
-      <div class="finding finding-critical">
-        <h3>🔴 Critical: Auditing disabled in all sampled environments</h3>
-        <p><strong>Affected:</strong> Contoso Platform (Default), Team Demos (Production), Alex Johnson (Developer)</p>
-        <p>Auditing is disabled (<code>isauditenabled = No</code>) in every environment checked, including production. Without auditing, you have <strong>no record of who accessed, modified, or deleted data</strong>. This is required for SOC 2, ISO 27001, GDPR, and HIPAA compliance. If a security incident occurs, there is no forensic trail to investigate.</p>
-        <div class="fix">pac env update-settings --name isauditenabled --value true --environment "&lt;environment-id&gt;"</div>
+      <div class="section-header"><span class="icon">💾</span><h2>Storage Overview</h2></div>
+      <div class="stat-grid" style="margin-bottom:24px;">
+        <div class="stat-card"><div class="stat-value">12.4 GB</div><div class="stat-label">Database</div></div>
+        <div class="stat-card"><div class="stat-value">3.2 GB</div><div class="stat-label">File</div></div>
+        <div class="stat-card"><div class="stat-value">0.8 GB</div><div class="stat-label">Log</div></div>
+        <div class="stat-card"><div class="stat-value">16.4 GB</div><div class="stat-label">Total Used</div></div>
+        <div class="stat-card"><div class="stat-value">30.0 GB</div><div class="stat-label">Total Capacity</div></div>
+        <div class="stat-card"><div class="stat-value">55%</div><div class="stat-label">Utilization</div></div>
       </div>
-
-      <div class="finding finding-warning">
-        <h3>🟡 Warning: Session timeout disabled in all sampled environments</h3>
-        <p><strong>Affected:</strong> Contoso Platform (Default), Team Demos (Production), Alex Johnson (Developer)</p>
-        <p>Session timeout is disabled (<code>sessiontimeoutenabled = No</code>). Users who walk away from a shared device or forget to log out remain authenticated indefinitely. This is a session hijacking risk, especially in shared workspaces, kiosks, or when employees use public computers.</p>
-        <div class="fix">pac env update-settings --name sessiontimeoutenabled --value true --environment "&lt;environment-id&gt;"<br>pac env update-settings --name sessiontimeoutinmins --value 60 --environment "&lt;environment-id&gt;"</div>
-      </div>
-
-      <div class="card" style="margin-top:20px;overflow-x:auto;">
-        <table>
-          <thead><tr><th>Setting</th><th>Default Env</th><th>Team Demos (Prod)</th><th>Status</th></tr></thead>
+      <div class="card" style="overflow-x:auto;">
+        <table id="storage-table">
+          <thead><tr><th>Environment</th><th>Database (MB)</th><th>File (MB)</th><th>Log (MB)</th><th>Total (MB)</th><th>% of Tenant</th></tr></thead>
           <tbody>
-            <tr><td>Auditing enabled</td><td>No</td><td>No</td><td><span class="badge badge-critical">🔴 Critical</span></td></tr>
-            <tr><td>Read auditing</td><td>No</td><td>No</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
-            <tr><td>User access auditing</td><td>No</td><td>No</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
-            <tr><td>Session timeout</td><td>Disabled</td><td>Disabled</td><td><span class="badge badge-warning">🟡 Warning</span></td></tr>
-            <tr><td>Plugin trace logging</td><td>Off</td><td>Off</td><td><span class="badge badge-success">✅ Good</span></td></tr>
-            <tr><td>Max upload file size</td><td>5 MB</td><td>5 MB</td><td><span class="badge badge-success">✅ Good</span></td></tr>
-            <tr><td>Blocked attachments</td><td>Comprehensive list</td><td>Comprehensive list</td><td><span class="badge badge-success">✅ Good</span></td></tr>
+            <tr><td>Contoso Platform (Default)</td><td class="num">3,240</td><td class="num">820</td><td class="num">210</td><td class="num">4,270</td><td class="num">26.0%</td></tr>
+            <tr><td>Team Demos</td><td class="num">2,180</td><td class="num">540</td><td class="num">145</td><td class="num">2,865</td><td class="num">17.5%</td></tr>
+            <tr><td>Agent Academy Commander (Morgan Chen)</td><td class="num">1,850</td><td class="num">420</td><td class="num">95</td><td class="num">2,365</td><td class="num">14.4%</td></tr>
+            <tr><td>dev-sandbox</td><td class="num">1,420</td><td class="num">380</td><td class="num">88</td><td class="num">1,888</td><td class="num">11.5%</td></tr>
+            <tr><td>user-agent-academy</td><td class="num">980</td><td class="num">260</td><td class="num">62</td><td class="num">1,302</td><td class="num">7.9%</td></tr>
+            <tr><td>Code Apps (Morgan Chen)</td><td class="num">720</td><td class="num">195</td><td class="num">48</td><td class="num">963</td><td class="num">5.9%</td></tr>
+            <tr><td>Workshop SYD</td><td class="num">680</td><td class="num">180</td><td class="num">42</td><td class="num">902</td><td class="num">5.5%</td></tr>
+            <tr><td>Alex Johnson</td><td class="num">520</td><td class="num">140</td><td class="num">35</td><td class="num">695</td><td class="num">4.2%</td></tr>
+            <tr><td>Morgan Chen</td><td class="num">410</td><td class="num">120</td><td class="num">28</td><td class="num">558</td><td class="num">3.4%</td></tr>
+            <tr><td>Other (13 environments)</td><td class="num">400</td><td class="num">145</td><td class="num">47</td><td class="num">592</td><td class="num">3.7%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Licensing Tab -->
+  <div id="tab-licensing" class="tab-content">
+    <div class="section">
+      <div class="section-header"><span class="icon">🔑</span><h2>Licensing Overview</h2></div>
+      <div class="stat-grid" style="margin-bottom:24px;">
+        <div class="stat-card"><div class="stat-value">150</div><div class="stat-label">Total Licenses</div></div>
+        <div class="stat-card"><div class="stat-value">112</div><div class="stat-label">Assigned</div></div>
+        <div class="stat-card"><div class="stat-value">38</div><div class="stat-label">Available</div></div>
+        <div class="stat-card"><div class="stat-value">75%</div><div class="stat-label">Utilization</div></div>
+      </div>
+      <div class="card" style="overflow-x:auto;">
+        <table id="licensing-table">
+          <thead><tr><th>License Plan</th><th>Purchased</th><th>Assigned</th><th>Available</th><th>Utilization</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Power Apps per User</td><td class="num">50</td><td class="num">42</td><td class="num">8</td><td class="num">84%</td><td><span class="badge badge-warning">🟡 High usage</span></td></tr>
+            <tr><td>Power Automate per User</td><td class="num">40</td><td class="num">35</td><td class="num">5</td><td class="num">88%</td><td><span class="badge badge-critical">🔴 Near capacity</span></td></tr>
+            <tr><td>Power Apps per App (2 apps)</td><td class="num">20</td><td class="num">12</td><td class="num">8</td><td class="num">60%</td><td><span class="badge badge-success">✅ Healthy</span></td></tr>
+            <tr><td>Copilot Studio</td><td class="num">10</td><td class="num">8</td><td class="num">2</td><td class="num">80%</td><td><span class="badge badge-warning">🟡 High usage</span></td></tr>
+            <tr><td>Power Pages Authenticated Users</td><td class="num">100</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="badge badge-info">ℹ️ Capacity-based</span></td></tr>
+            <tr><td>AI Builder Credits</td><td class="num">1M</td><td class="num">—</td><td class="num">—</td><td class="num">62%</td><td><span class="badge badge-success">✅ Healthy</span></td></tr>
+            <tr><td>Dataverse Database Capacity</td><td class="num">30 GB</td><td class="num">—</td><td class="num">—</td><td class="num">55%</td><td><span class="badge badge-success">✅ Healthy</span></td></tr>
+            <tr><td>Dataverse File Capacity</td><td class="num">20 GB</td><td class="num">—</td><td class="num">—</td><td class="num">16%</td><td><span class="badge badge-success">✅ Healthy</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><span class="icon">👤</span><h2>Top License Consumers</h2></div>
+      <div class="card" style="overflow-x:auto;">
+        <table id="license-users-table">
+          <thead><tr><th>User</th><th>Licenses Held</th><th>Environments Active In</th><th>Resources Created</th></tr></thead>
+          <tbody>
+            <tr><td>Morgan Chen</td><td>Power Apps per User, Power Automate per User, Copilot Studio</td><td>8</td><td>42</td></tr>
+            <tr><td>Alex Johnson</td><td>Power Apps per User, Power Automate per User, Copilot Studio</td><td>6</td><td>28</td></tr>
+            <tr><td>Taylor Kim</td><td>Power Apps per User, Power Automate per User</td><td>5</td><td>19</td></tr>
+            <tr><td>Jordan Lee</td><td>Power Apps per User, Copilot Studio</td><td>4</td><td>15</td></tr>
+            <tr><td>Casey Rivera</td><td>Power Apps per App</td><td>2</td><td>6</td></tr>
           </tbody>
         </table>
       </div>
@@ -1093,7 +1267,7 @@ tbody tr:hover { background: var(--bg-card-hover); }
     <div class="section">
       <div class="section-header"><span class="icon">🎯</span><h2>Prioritized Recommendations</h2></div>
       <div class="card" style="overflow-x:auto;">
-        <table class="rec-table">
+        <table class="rec-table" id="rec-table">
           <thead><tr><th>#</th><th>Priority</th><th>Action</th><th>Why</th><th>How</th></tr></thead>
           <tbody>
             <tr><td>1</td><td><span class="badge badge-critical">Critical</span></td><td>Reclassify DLP connectors and block high-risk connectors</td><td>Currently all 1,622 connectors are in General — any data can flow anywhere. Zero data loss prevention.</td><td>Edit the Default DLP policy in Power Platform admin center. Move Dataverse, SharePoint, SQL, O365 to Confidential. Block HTTP and custom connectors.</td></tr>
@@ -1121,7 +1295,7 @@ tbody tr:hover { background: var(--bg-card-hover); }
 
 <script>
 // Theme toggle
-const toggle = document.getElementById('themeToggle');
+var toggle = document.getElementById('themeToggle');
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   toggle.textContent = theme === 'dark' ? '🌙' : '☀️';
@@ -1131,17 +1305,876 @@ toggle.addEventListener('click', function() {
   var current = document.documentElement.dataset.theme || 'dark';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
-// Apply saved theme icon
 var saved = localStorage.getItem('pp-report-theme') || 'dark';
 toggle.textContent = saved === 'dark' ? '🌙' : '☀️';
 
-// Tab navigation
-function showTab(name) {
-  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
-  document.querySelectorAll('.nav-tab').forEach(function(el) { el.classList.remove('active'); });
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+// Navigation drawer
+var burger = document.getElementById('navBurger');
+var drawer = document.getElementById('navDrawer');
+var backdrop = document.getElementById('navBackdrop');
+var navCloseBtn = document.getElementById('navClose');
+
+function openNav() {
+  drawer.classList.add('active');
+  backdrop.classList.add('active');
+  burger.textContent = '\u2715';
 }
+function closeNav() {
+  drawer.classList.remove('active');
+  backdrop.classList.remove('active');
+  burger.textContent = '\u2630';
+}
+burger.addEventListener('click', function() {
+  drawer.classList.contains('active') ? closeNav() : openNav();
+});
+backdrop.addEventListener('click', closeNav);
+navCloseBtn.addEventListener('click', closeNav);
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNav(); });
+
+// Tab navigation via drawer
+document.querySelectorAll('.nav-item').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    showTab(btn.dataset.tab, btn);
+    closeNav();
+  });
+});
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  var sg = document.querySelector('.stat-grid');
+  if (sg) sg.style.display = name === 'overview' ? '' : 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Stat card click handler
+document.querySelectorAll('.stat-card[data-action]').forEach(function(card) {
+  card.addEventListener('click', function() {
+    var action = card.dataset.action;
+    var parts = action.split(':');
+
+    if (parts[0] === 'tab') {
+      // Navigate to a tab, optionally pre-fill search
+      var tabName = parts[1];
+      var navBtn = document.querySelector('.nav-item[data-tab="' + tabName + '"]');
+      showTab(tabName, navBtn);
+      // If there's a filter hint (e.g. "managed"), type it into the search box
+      if (parts[2]) {
+        var tabEl = document.getElementById('tab-' + tabName);
+        if (tabEl) {
+          var search = tabEl.querySelector('.table-search');
+          if (search) {
+            search.value = parts[2];
+            search.dispatchEvent(new Event('input'));
+          }
+        }
+      }
+    } else if (parts[0] === 'filter') {
+      // Navigate to resources tab and pre-fill search
+      var filterText = parts.slice(1).join(':');
+      var navBtn = document.querySelector('.nav-item[data-tab="resources"]');
+      showTab('resources', navBtn);
+      var resTab = document.getElementById('tab-resources');
+      if (resTab) {
+        var search = resTab.querySelector('.table-search');
+        if (search) {
+          search.value = filterText;
+          search.dispatchEvent(new Event('input'));
+        }
+      }
+    }
+  });
+});
+
+// ── Resource type mapping ──
+var typeMap = {
+  agent: { label: "Copilot Studio Agents", icon: "\u{1F9E0}" },
+  mda: { label: "Model-driven Apps", icon: "\u{1F4CA}" },
+  cloud: { label: "Cloud Flows", icon: "\u26A1" },
+  agentflow: { label: "Agent Flows", icon: "\u{1F916}" },
+  canvas: { label: "Canvas Apps", icon: "\u{1F3A8}" },
+  code: { label: "Code Apps", icon: "\u{1F4BB}" },
+  builder: { label: "App Builder Apps", icon: "\u{1F3D7}\uFE0F" },
+  m365: { label: "M365 Agent Flows", icon: "\u{1F504}" }
+};
+
+// ── Environment resource data ──
+// Format: [name, type, created, modified, creator, status, description]
+var envResources = {
+  "Agent Academy Commander (Morgan Chen)": [
+    ["Customer Service Agent", "agent", "2026-03-15", "2026-04-08", "Morgan Chen", "Published", "AI-powered customer service agent for support tickets"],
+    ["Sales Copilot", "agent", "2026-03-10", "2026-04-05", "Morgan Chen", "Published", "Sales enablement agent for opportunity management"],
+    ["HR Assistant", "agent", "2026-03-08", "2026-03-28", "Morgan Chen", "Published", "Employee onboarding and HR query assistant"],
+    ["IT Helpdesk Agent", "agent", "2026-03-01", "2026-04-01", "Morgan Chen", "Published", "IT support ticket triage and resolution agent"],
+    ["Knowledge Base Agent", "agent", "2026-02-28", "2026-03-20", "Morgan Chen", "Draft", "Internal knowledge base search assistant"],
+    ["Finance Query Agent", "agent", "2026-02-25", "2026-03-15", "Morgan Chen", "Published", "Budget and expense query agent"],
+    ["Agent Academy Dashboard", "mda", "2026-02-15", "2026-04-08", "Morgan Chen", "Active", "Main dashboard for Agent Academy management"],
+    ["Agent Configuration", "mda", "2026-02-15", "2026-04-05", "Morgan Chen", "Active", "Configuration app for agent deployment settings"]
+  ],
+  "dev-sandbox": [
+    ["Test Copilot v2", "agent", "2026-03-20", "2026-04-05", "Alex Johnson", "Draft", "Development copilot for testing new dialog flows"],
+    ["Dev Chatbot", "agent", "2026-03-01", "2026-03-25", "Taylor Kim", "Draft", "Experimental chatbot for internal dev team"],
+    ["Development Workspace", "mda", "2026-02-20", "2026-04-01", "Alex Johnson", "Active", "Model-driven app for development task tracking"],
+    ["Data Sync Flow", "cloud", "2026-03-10", "2026-04-02", "Alex Johnson", "Active", "Synchronizes data between dev and staging environments"],
+    ["Record Processor", "agentflow", "2026-03-15", "2026-03-28", "Taylor Kim", "Active", "Processes and validates incoming records"]
+  ],
+  "user-agent-academy": [
+    ["Training Agent", "agent", "2026-03-05", "2026-04-01", "Jordan Lee", "Published", "Agent for user training and onboarding"],
+    ["Feedback Collector", "agent", "2026-03-01", "2026-03-20", "Jordan Lee", "Published", "Collects and processes user feedback"],
+    ["Academy Portal", "mda", "2026-02-28", "2026-04-05", "Jordan Lee", "Active", "Training portal for agent academy users"],
+    ["Certificate Generator", "agentflow", "2026-03-10", "2026-03-25", "Jordan Lee", "Active", "Generates training completion certificates"],
+    ["Progress Tracker", "mda", "2026-02-20", "2026-03-15", "Jordan Lee", "Active", "Tracks learner progress through academy modules"]
+  ],
+  "Code Apps (Morgan Chen)": [
+    ["Inventory Dashboard", "code", "2026-04-01", "2026-04-10", "Morgan Chen", "Active", "Real-time inventory dashboard built with React"],
+    ["API Gateway Manager", "code", "2026-03-25", "2026-04-08", "Morgan Chen", "Active", "Custom API gateway management interface"],
+    ["Data Visualizer", "agent", "2026-03-15", "2026-04-05", "Morgan Chen", "Published", "Agent for generating data visualizations"],
+    ["When a new email arrives (V3)", "cloud", "2026-04-10", "2026-04-10", "Morgan Chen", "Active", "Triggers on new email to process attachments"],
+    ["App Analytics", "mda", "2026-03-01", "2026-03-28", "Morgan Chen", "Active", "Analytics dashboard for code app usage"]
+  ],
+  "Workshop SYD": [
+    ["Warehouse Inventory Manager", "agent", "2026-04-10", "2026-04-10", "Workshop User", "Published", "Manages warehouse inventory levels and alerts"],
+    ["Inventory Alert Monitor", "agent", "2026-04-10", "2026-04-10", "Workshop User", "Published", "Monitors inventory thresholds and sends alerts"],
+    ["Warehouse Agent (Full)", "agent", "2026-04-09", "2026-04-10", "Workshop User", "Published", "Full-featured warehouse management agent"],
+    ["Zava order system", "mda", "2026-04-09", "2026-04-09", "Workshop User", "Active", "Order management system for Zava products"],
+    ["Recurring Copilot Trigger", "cloud", "2026-04-10", "2026-04-10", "Workshop User", "Active", "Scheduled trigger for copilot agent execution"],
+    ["Create Product Inventory Adjustment", "agentflow", "2026-04-09", "2026-04-09", "Workshop User", "Active", "Adjusts product inventory based on agent decisions"]
+  ],
+  "Workshop26 BRK431 (rsmith)": [
+    ["Session Q&A Agent", "agent", "2026-04-05", "2026-04-08", "R. Smith", "Published", "Handles session questions during BRK431 workshop"],
+    ["Lab Exercise Tracker", "mda", "2026-04-05", "2026-04-07", "R. Smith", "Active", "Tracks lab exercise completion for attendees"],
+    ["Post-Session Feedback", "agentflow", "2026-04-06", "2026-04-08", "R. Smith", "Active", "Collects and processes post-session feedback"]
+  ],
+  "user-dev": [
+    ["Personal Assistant", "agent", "2026-03-01", "2026-04-01", "Dev User", "Draft", "Personal productivity assistant for daily tasks"],
+    ["Task Manager", "mda", "2026-02-15", "2026-03-20", "Dev User", "Active", "Personal task and project management app"],
+    ["Daily Digest Flow", "cloud", "2026-03-10", "2026-03-25", "Dev User", "Active", "Sends daily summary of tasks and updates"]
+  ],
+  "Taylor Kim": [
+    ["Code Review Agent", "agent", "2026-03-20", "2026-04-05", "Taylor Kim", "Published", "Assists with code review by analyzing PRs"],
+    ["Dev Dashboard", "mda", "2026-03-01", "2026-03-28", "Taylor Kim", "Active", "Developer productivity dashboard"],
+    ["PR Notification Flow", "m365", "2026-03-15", "2026-04-01", "Taylor Kim", "Active", "Notifies team of PR status changes via Teams"],
+    ["Component Library", "code", "2026-03-10", "2026-03-25", "Taylor Kim", "Active", "Reusable component library for Power Apps"]
+  ],
+  "Alex Johnson": [
+    ["BC Agent", "agent", "2026-04-12", "2026-04-12", "Alex Johnson", "Published", "Business Central integration agent"],
+    ["Meeting Scheduler Agent", "agent", "2026-03-25", "2026-04-05", "Alex Johnson", "Published", "Schedules meetings based on availability"],
+    ["Project Tracker", "mda", "2026-03-01", "2026-03-20", "Alex Johnson", "Active", "Project milestone and deliverable tracking"]
+  ],
+  "Workshop26 BRK431 (mchen)": [
+    ["Demo Agent", "agent", "2026-04-05", "2026-04-08", "Morgan Chen", "Published", "Demo copilot for BRK431 session"],
+    ["Workshop Dashboard", "mda", "2026-04-05", "2026-04-07", "Morgan Chen", "Active", "Live dashboard for workshop progress"],
+    ["Lab Reset Flow", "agentflow", "2026-04-06", "2026-04-08", "Morgan Chen", "Active", "Resets lab environments between sessions"]
+  ],
+  "Contoso Platform (default)": [
+    ["Welcome Bot", "agent", "2026-01-15", "2026-03-01", "System", "Published", "Default welcome bot for new users"],
+    ["Platform Admin", "mda", "2026-01-10", "2026-03-15", "System", "Active", "Platform administration and settings"],
+    ["Dynamics 365 Sales", "mda", "2026-01-10", "2026-02-28", "System", "Active", "Default Dynamics 365 Sales application"]
+  ],
+  "LabTest1": [
+    ["Test App 1", "mda", "2026-03-15", "2026-03-20", "Alex Johnson", "Active", "Test model-driven app for lab validation"],
+    ["Test App 2", "mda", "2026-03-15", "2026-03-18", "Alex Johnson", "Active", "Secondary test app for form customization"],
+    ["Test App 3", "mda", "2026-03-16", "2026-03-19", "Alex Johnson", "Inactive", "Deprecated test app scheduled for removal"],
+    ["Plugin Tester", "mda", "2026-03-14", "2026-03-17", "Alex Johnson", "Active", "Test harness for Dataverse plugin development"]
+  ],
+  "Alex Johnson (Preview)": [
+    ["Preview Agent", "agent", "2026-03-25", "2026-04-01", "Alex Johnson", "Draft", "Preview version of BC integration agent"],
+    ["Preview Dashboard", "mda", "2026-03-20", "2026-03-28", "Alex Johnson", "Active", "Preview environment dashboard"],
+    ["Preview Analytics", "mda", "2026-03-20", "2026-03-25", "Alex Johnson", "Active", "Analytics for preview feature testing"]
+  ],
+  "Morgan Chen": [
+    ["Personal Copilot", "agent", "2026-03-01", "2026-04-05", "Morgan Chen", "Published", "Personal productivity copilot"],
+    ["Dev Sandbox App", "mda", "2026-02-20", "2026-03-15", "Morgan Chen", "Active", "Personal development sandbox application"],
+    ["Dynamics 365 Sales", "mda", "2026-02-20", "2026-02-20", "System", "Active", "Default Dynamics 365 Sales application"]
+  ],
+  "GenPages (Morgan Chen)": [
+    ["Generated Page 1", "mda", "2026-03-28", "2026-04-05", "Morgan Chen", "Active", "Auto-generated dashboard page"],
+    ["Generated Page 2", "mda", "2026-03-28", "2026-04-03", "Morgan Chen", "Active", "Auto-generated data entry page"],
+    ["Generated Page 3", "mda", "2026-03-29", "2026-04-01", "Morgan Chen", "Active", "Auto-generated reporting page"],
+    ["Generated Page 4", "mda", "2026-03-30", "2026-04-02", "Morgan Chen", "Active", "Auto-generated analytics page"]
+  ],
+  "dev-cs-academy": [
+    ["CS Academy App", "mda", "2026-02-15", "2026-03-10", "Jordan Lee", "Active", "Copilot Studio academy management app"],
+    ["Lesson Planner", "mda", "2026-02-15", "2026-03-05", "Jordan Lee", "Active", "Lesson planning and scheduling app"],
+    ["Student Portal", "mda", "2026-02-20", "2026-03-15", "Jordan Lee", "Active", "Student-facing portal for academy content"]
+  ],
+  "Microsoft 365": [
+    ["Dynamics 365 Sales", "mda", "2026-01-01", "2026-03-01", "System", "Active", "Microsoft 365 integrated Sales application"],
+    ["Power Automate Management", "mda", "2026-01-01", "2026-02-15", "System", "Active", "Flow management and monitoring"],
+    ["Dynamics 365 Customer Service", "mda", "2026-01-01", "2026-02-15", "System", "Active", "Customer service management application"]
+  ],
+  "Jordan Lee": [
+    ["Dynamics 365 Sales", "mda", "2026-02-01", "2026-03-01", "System", "Active", "Default Dynamics 365 Sales application"],
+    ["Custom Dashboard", "mda", "2026-02-15", "2026-03-10", "Jordan Lee", "Active", "Personal development dashboard"],
+    ["Power Pages Management", "mda", "2026-02-20", "2026-03-05", "Jordan Lee", "Active", "Power Pages site management app"]
+  ],
+  "PowerPagesDeveloper-033126-184711": [
+    ["Power Pages Management", "mda", "2026-03-31", "2026-04-02", "Morgan Chen", "Active", "Power Pages development management"],
+    ["Site Designer", "mda", "2026-03-31", "2026-04-01", "Morgan Chen", "Active", "Visual site designer for Power Pages"],
+    ["Content Manager", "mda", "2026-03-31", "2026-04-01", "Morgan Chen", "Active", "Content management for Power Pages sites"]
+  ],
+  "Workshop (Morgan Chen)": [
+    ["Workshop App", "mda", "2026-03-15", "2026-04-01", "Morgan Chen", "Active", "Workshop demonstration application"],
+    ["Lab Manager", "mda", "2026-03-15", "2026-03-28", "Morgan Chen", "Active", "Lab environment management"],
+    ["Dynamics 365 Sales", "mda", "2026-03-15", "2026-03-15", "System", "Active", "Default Dynamics 365 Sales application"]
+  ],
+  "Team Demos": [
+    ["Demo Showcase", "mda", "2026-02-01", "2026-03-15", "System", "Active", "Team demo showcase application"],
+    ["Dynamics 365 Sales", "mda", "2026-02-01", "2026-02-01", "System", "Active", "Default Dynamics 365 Sales application"],
+    ["Customer Engagement", "mda", "2026-02-01", "2026-03-01", "System", "Active", "Customer engagement and tracking"]
+  ],
+  "PowerPagesDeveloper-033126-185220": []
+};
+
+// Generate pseudo-random GUID from string
+function genId(name) {
+  var h = 0;
+  for (var i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+  h = Math.abs(h);
+  return (
+    h.toString(16).padStart(8, '0').slice(0, 8) + '-' +
+    ((h >> 4) & 0xffff).toString(16).padStart(4, '0') + '-' +
+    '4' + ((h >> 8) & 0xfff).toString(16).padStart(3, '0') + '-' +
+    'a' + ((h >> 12) & 0xfff).toString(16).padStart(3, '0') + '-' +
+    ((h * 2654435761) >>> 0).toString(16).padStart(12, '0').slice(0, 12)
+  );
+}
+
+// HTML escape
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// Render drilldown panel for an environment (used in deep-dive resources section)
+function renderDrilldown(envName, total) {
+  var resources = envResources[envName];
+  if (!resources || resources.length === 0) {
+    return '<div class="no-resources">No resources in this environment</div>';
+  }
+  var shown = resources.length;
+  var html = '<table class="res-table"><thead><tr>';
+  html += '<th>Name</th><th>Type</th><th>Created</th><th>Modified</th><th>Status</th>';
+  html += '</tr></thead><tbody>';
+
+  resources.forEach(function(r, i) {
+    var name = r[0], type = r[1], created = r[2], modified = r[3];
+    var creator = r[4], status = r[5], desc = r[6];
+    var t = typeMap[type] || { label: type, icon: "\u{1F4C4}" };
+    var rid = 'ddres-' + envName.replace(/\W/g, '') + '-' + i;
+    var statusClass = status === 'Published' ? 'badge-success'
+      : status === 'Draft' ? 'badge-warning'
+      : status === 'Inactive' ? 'badge-critical'
+      : 'badge-info';
+    var resId = genId(envName + name);
+
+    html += '<tr class="res-row" onclick="toggleResource(\'' + rid + '\', this, event)">';
+    html += '<td><span class="res-chevron">\u25B6</span>' + t.icon + ' ' + escHtml(name) + '</td>';
+    html += '<td><span class="resource-type-pill">' + escHtml(t.label) + '</span></td>';
+    html += '<td>' + created + '</td>';
+    html += '<td>' + modified + '</td>';
+    html += '<td><span class="badge ' + statusClass + '">' + escHtml(status) + '</span></td>';
+    html += '</tr>';
+
+    html += '<tr class="res-detail-row" id="' + rid + '"><td colspan="5">';
+    html += '<div class="detail-grid">';
+    html += '<span class="detail-label">Resource ID</span><span class="detail-value">' + resId + '</span>';
+    html += '<span class="detail-label">Display Name</span><span class="detail-value">' + escHtml(name) + '</span>';
+    html += '<span class="detail-label">Resource Type</span><span class="detail-value">' + escHtml(t.label) + '</span>';
+    html += '<span class="detail-label">Environment</span><span class="detail-value">' + escHtml(envName) + '</span>';
+    html += '<span class="detail-label">Created</span><span class="detail-value">' + created + 'T00:00:00Z</span>';
+    html += '<span class="detail-label">Last Modified</span><span class="detail-value">' + modified + 'T00:00:00Z</span>';
+    html += '<span class="detail-label">Created By</span><span class="detail-value">' + escHtml(creator) + '</span>';
+    html += '<span class="detail-label">Status</span><span class="detail-value">' + escHtml(status) + '</span>';
+    html += '<span class="detail-label">Description</span><span class="detail-value">' + escHtml(desc) + '</span>';
+    html += '<span class="detail-label">Solution</span><span class="detail-value">Default Solution</span>';
+    html += '<span class="detail-label">Subscription</span><span class="detail-value">contoso-sub-01</span>';
+    html += '<span class="detail-label">Resource Group</span><span class="detail-value">rg-powerplatform-' + type + '</span>';
+    html += '</div></td></tr>';
+  });
+
+  html += '</tbody></table>';
+  return html;
+}
+
+// Toggle resource detail row
+function toggleResource(id, row, evt) {
+  if (evt) evt.stopPropagation();
+  var detail = document.getElementById(id);
+  if (!detail) return;
+  row.classList.toggle('expanded');
+  detail.classList.toggle('active');
+}
+
+// Toggle individual resource detail (allows multiple open)
+function toggleResDetail(id, row) {
+  var det = document.getElementById(id);
+  if (!det) return;
+  row.classList.toggle('expanded');
+  det.classList.toggle('active');
+}
+
+// Toggle deep-dive collapsible section
+function toggleDeepSection(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+// Environment settings sample data per environment
+var envSettings = {
+  _default: [
+    ['Auditing enabled', 'No', 'badge-critical', '🔴 Critical'],
+    ['Read auditing', 'No', 'badge-warning', '🟡 Warning'],
+    ['User access auditing', 'No', 'badge-warning', '🟡 Warning'],
+    ['Session timeout', 'Disabled', 'badge-warning', '🟡 Warning'],
+    ['Plugin trace logging', 'Off', 'badge-success', '✅ Good'],
+    ['Max upload file size', '5 MB', 'badge-success', '✅ Good'],
+    ['Blocked attachments', 'Comprehensive list', 'badge-success', '✅ Good']
+  ]
+};
+
+// Per-environment storage data [database MB, file MB, log MB]
+var envStorage = {
+  'Contoso Platform (Default)': [3240, 820, 210],
+  'Team Demos': [2180, 540, 145],
+  'Agent Academy Commander (Morgan Chen)': [1850, 420, 95],
+  'dev-sandbox': [1420, 380, 88],
+  'user-agent-academy': [980, 260, 62],
+  'Code Apps (Morgan Chen)': [720, 195, 48],
+  'Workshop SYD': [680, 180, 42],
+  'Alex Johnson': [520, 140, 35],
+  'Morgan Chen': [410, 120, 28],
+  _default: [45, 12, 5]
+};
+
+// Store environment metadata from table
+var envMeta = {};
+
+// Show environment deep-dive page
+function showEnvDeepDive(envName) {
+  var listView = document.getElementById('env-list-view');
+  var deepView = document.getElementById('env-deepdive-view');
+  if (!listView || !deepView) return;
+
+  var meta = envMeta[envName] || {};
+  var resources = envResources[envName] || [];
+  var settings = envSettings[envName] || envSettings._default;
+  var envId = genId(envName);
+  _deepDiveEnv = envName;
+
+  var h = '';
+  // Back button
+  h += '<button class="deepdive-back" onclick="hideEnvDeepDive()">← Back to environments</button>';
+  // Header
+  h += '<div class="deepdive-header">';
+  h += '<h1 class="deepdive-title">🌐 ' + escHtml(envName) + '</h1>';
+  h += '<div class="deepdive-badges">';
+  if (meta.type) h += '<span class="env-type env-type-' + meta.type.toLowerCase() + '">' + escHtml(meta.type) + '</span>';
+  if (meta.managed) h += '<span class="badge ' + (meta.managed.indexOf('✓') !== -1 ? 'badge-success' : 'badge-warning') + '">' + escHtml(meta.managed) + '</span>';
+  h += '</div></div>';
+  h += '<p class="deepdive-subtitle">' + escHtml(meta.region || 'unitedstates') + ' · ' + resources.length + ' resources · Environment ID: ' + envId + '</p>';
+
+  // Section 1: Environment Details (open by default)
+  h += '<div class="deepdive-section open">';
+  h += '<div class="deepdive-section-header" onclick="toggleDeepSection(this)">';
+  h += '<span class="env-chevron">▶</span><span>📋</span><h3>Environment Details</h3></div>';
+  h += '<div class="deepdive-section-content">';
+  h += '<div class="deepdive-detail-grid">';
+  var details = [
+    ['Environment Name', envName],
+    ['Environment ID', envId],
+    ['Type', meta.type || 'Unknown'],
+    ['Managed Environment', meta.managed || 'Unknown'],
+    ['Region', meta.region || 'unitedstates'],
+    ['Total Resources', String(resources.length)],
+    ['Subscription', 'contoso-sub-01'],
+    ['URL', 'https://' + envName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '.crm.dynamics.com']
+  ];
+  details.forEach(function(d) {
+    h += '<div class="deepdive-detail-item"><div class="label">' + d[0] + '</div><div class="value">' + escHtml(d[1]) + '</div></div>';
+  });
+  h += '</div></div></div>';
+
+  // Section 2: Environment Settings (collapsed by default)
+  h += '<div class="deepdive-section">';
+  h += '<div class="deepdive-section-header" onclick="toggleDeepSection(this)">';
+  h += '<span class="env-chevron">▶</span><span>⚙️</span><h3>Environment Settings</h3></div>';
+  h += '<div class="deepdive-section-content">';
+  h += '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">';
+  h += '<thead><tr><th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-color);">Setting</th>';
+  h += '<th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-color);">Value</th>';
+  h += '<th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-color);">Status</th></tr></thead><tbody>';
+  settings.forEach(function(s) {
+    h += '<tr><td style="padding:10px 12px;border-bottom:1px solid var(--border-color);">' + escHtml(s[0]) + '</td>';
+    h += '<td style="padding:10px 12px;border-bottom:1px solid var(--border-color);">' + escHtml(s[1]) + '</td>';
+    h += '<td style="padding:10px 12px;border-bottom:1px solid var(--border-color);"><span class="badge ' + s[2] + '">' + s[3] + '</span></td></tr>';
+  });
+  h += '</tbody></table></div></div>';
+
+  // Section 3: Storage (collapsed by default)
+  var stor = envStorage[envName] || envStorage._default;
+  var storTotal = stor[0] + stor[1] + stor[2];
+  h += '<div class="deepdive-section">';
+  h += '<div class="deepdive-section-header" onclick="toggleDeepSection(this)">';
+  h += '<span class="env-chevron">▶</span><span>💾</span><h3>Storage</h3></div>';
+  h += '<div class="deepdive-section-content">';
+  h += '<div class="stat-grid" style="margin-bottom:16px;">';
+  h += '<div class="stat-card"><div class="stat-value">' + stor[0].toLocaleString() + ' MB</div><div class="stat-label">Database</div></div>';
+  h += '<div class="stat-card"><div class="stat-value">' + stor[1].toLocaleString() + ' MB</div><div class="stat-label">File</div></div>';
+  h += '<div class="stat-card"><div class="stat-value">' + stor[2].toLocaleString() + ' MB</div><div class="stat-label">Log</div></div>';
+  h += '<div class="stat-card"><div class="stat-value">' + storTotal.toLocaleString() + ' MB</div><div class="stat-label">Total</div></div>';
+  h += '</div></div></div>';
+
+  // Section 4: Resources (open by default)
+  // Sort resources alphabetically by name
+  var sortedResources = resources.slice().sort(function(a, b) {
+    return a[0].localeCompare(b[0]);
+  });
+
+  // Count resources by type
+  var typeCounts = {};
+  sortedResources.forEach(function(r) {
+    var t = r[1];
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+  var typeKeys = Object.keys(typeCounts).sort(function(a, b) { return typeCounts[b] - typeCounts[a]; });
+
+  h += '<div class="deepdive-section open">';
+  h += '<div class="deepdive-section-header" onclick="toggleDeepSection(this)">';
+  h += '<span class="env-chevron">▶</span><span>📦</span><h3>Resources (' + resources.length + ')</h3></div>';
+  h += '<div class="deepdive-section-content">';
+
+  // Type selector grid
+  h += '<div class="res-type-grid" id="deepdive-type-grid">';
+  typeKeys.forEach(function(key) {
+    var t = typeMap[key] || { label: key, icon: '📄' };
+    h += '<div class="res-type-card" data-type="' + key + '" onclick="filterDeepDiveResType(\'' + key + '\')">';
+    h += '<span class="res-type-icon">' + t.icon + '</span>';
+    h += '<span class="res-type-count">' + typeCounts[key] + '</span>';
+    h += '<span class="res-type-label">' + escHtml(t.label) + '</span>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  // Full resource table (shown by default)
+  h += '<div id="deepdive-res-table-wrap">';
+  if (resources.length === 0) {
+    h += '<div class="no-resources">No resources in this environment</div>';
+  } else {
+    h += '<table class="res-table" id="deepdive-res-table"><thead><tr>';
+    h += '<th>Name</th><th>Type</th><th>Created</th><th>Modified</th><th>Creator</th><th>Status</th>';
+    h += '</tr></thead><tbody>';
+
+    sortedResources.forEach(function(r, i) {
+      var name = r[0], type = r[1], created = r[2], modified = r[3];
+      var creator = r[4], status = r[5], desc = r[6];
+      var t = typeMap[type] || { label: type, icon: '📄' };
+      var rid = 'ddtr-' + envName.replace(/\W/g, '') + '-' + i;
+      var statusClass = status === 'Published' ? 'badge-success'
+        : status === 'Draft' ? 'badge-warning'
+        : status === 'Inactive' ? 'badge-critical'
+        : 'badge-info';
+      var resId = genId(envName + name);
+
+      h += '<tr class="res-row" data-res-type="' + type + '" onclick="toggleResource(\'' + rid + '\', this, event)">';
+      h += '<td><span class="res-chevron">▶</span>' + t.icon + ' ' + escHtml(name) + '</td>';
+      h += '<td><span class="resource-type-pill">' + escHtml(t.label) + '</span></td>';
+      h += '<td>' + created + '</td>';
+      h += '<td>' + modified + '</td>';
+      h += '<td>' + escHtml(creator) + '</td>';
+      h += '<td><span class="badge ' + statusClass + '">' + escHtml(status) + '</span></td>';
+      h += '</tr>';
+
+      h += '<tr class="res-detail-row" data-res-type="' + type + '" id="' + rid + '"><td colspan="6">';
+      h += '<div class="detail-grid">';
+      h += '<span class="detail-label">Resource ID</span><span class="detail-value">' + resId + '</span>';
+      h += '<span class="detail-label">Display Name</span><span class="detail-value">' + escHtml(name) + '</span>';
+      h += '<span class="detail-label">Resource Type</span><span class="detail-value">' + escHtml(t.label) + '</span>';
+      h += '<span class="detail-label">Environment</span><span class="detail-value">' + escHtml(envName) + '</span>';
+      h += '<span class="detail-label">Created</span><span class="detail-value">' + created + 'T00:00:00Z</span>';
+      h += '<span class="detail-label">Last Modified</span><span class="detail-value">' + modified + 'T00:00:00Z</span>';
+      h += '<span class="detail-label">Created By</span><span class="detail-value">' + escHtml(creator) + '</span>';
+      h += '<span class="detail-label">Status</span><span class="detail-value">' + escHtml(status) + '</span>';
+      h += '<span class="detail-label">Description</span><span class="detail-value">' + escHtml(desc) + '</span>';
+      h += '<span class="detail-label">Solution</span><span class="detail-value">Default Solution</span>';
+      h += '<span class="detail-label">Subscription</span><span class="detail-value">contoso-sub-01</span>';
+      h += '<span class="detail-label">Resource Group</span><span class="detail-value">rg-powerplatform-' + type + '</span>';
+      h += '</div></td></tr>';
+    });
+
+    h += '</tbody></table>';
+  }
+  h += '</div>';
+
+  h += '</div></div>';
+
+  deepView.innerHTML = h;
+  listView.style.display = 'none';
+  deepView.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Return to environment list
+function hideEnvDeepDive() {
+  var listView = document.getElementById('env-list-view');
+  var deepView = document.getElementById('env-deepdive-view');
+  if (!listView || !deepView) return;
+  deepView.style.display = 'none';
+  listView.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Current deep-dive environment name
+var _deepDiveEnv = '';
+
+// Filter deep-dive resource table by type card (toggle)
+function filterDeepDiveResType(typeKey) {
+  var grid = document.getElementById('deepdive-type-grid');
+  var tbl = document.getElementById('deepdive-res-table');
+  if (!grid || !tbl) return;
+
+  var cards = grid.querySelectorAll('.res-type-card');
+  var alreadyActive = false;
+  cards.forEach(function(c) {
+    if (c.dataset.type === typeKey && c.classList.contains('active')) alreadyActive = true;
+  });
+
+  // Clear all active states
+  cards.forEach(function(c) { c.classList.remove('active'); });
+
+  // Get all resource rows and detail rows
+  var rows = tbl.querySelectorAll('tbody tr[data-res-type]');
+
+  if (alreadyActive) {
+    // Clicking same card again — show all
+    rows.forEach(function(r) { r.style.display = ''; });
+  } else {
+    // Set active and filter
+    cards.forEach(function(c) {
+      if (c.dataset.type === typeKey) c.classList.add('active');
+    });
+    rows.forEach(function(r) {
+      if (r.dataset.resType === typeKey) {
+        // Show data rows, but keep detail rows respecting their expand state
+        if (r.classList.contains('res-detail-row')) {
+          r.style.display = r.classList.contains('active') ? 'table-row' : '';
+        } else {
+          r.style.display = '';
+        }
+      } else {
+        r.style.display = 'none';
+      }
+    });
+  }
+}
+
+// Initialize environment table (arrow navigation, no inline drilldowns)
+document.addEventListener('DOMContentLoaded', function() {
+  var table = document.getElementById('env-table');
+  if (!table) return;
+  var rows = Array.prototype.slice.call(table.querySelectorAll('tbody > tr'));
+
+  rows.forEach(function(row) {
+    var nameCell = row.querySelector('.env-name');
+    if (!nameCell) return;
+    var envName = nameCell.textContent.trim();
+
+    // Store metadata
+    envMeta[envName] = {
+      type: row.cells[1] ? row.cells[1].textContent.trim() : '',
+      managed: row.cells[2] ? row.cells[2].textContent.trim() : '',
+      region: row.cells[3] ? row.cells[3].textContent.trim() : '',
+      resources: parseInt(row.cells[4] ? row.cells[4].textContent : '0') || 0
+    };
+
+    // Add arrow button cell
+    var arrowCell = document.createElement('td');
+    arrowCell.style.textAlign = 'center';
+    var arrowBtn = document.createElement('button');
+    arrowBtn.className = 'env-arrow';
+    arrowBtn.title = 'View ' + envName;
+    arrowBtn.textContent = '→';
+    arrowBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      showEnvDeepDive(envName);
+    });
+    arrowCell.appendChild(arrowBtn);
+    row.appendChild(arrowCell);
+
+    // Also make whole row clickable
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', function() {
+      showEnvDeepDive(envName);
+    });
+  });
+
+  // ── Table Sort & Filter ──
+  function initTableFeatures(tableId, opts) {
+    var tbl = document.getElementById(tableId);
+    if (!tbl) return;
+    var card = tbl.closest('.card') || tbl.parentElement;
+
+    // Search input
+    if (opts.search) {
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'table-search';
+      input.placeholder = opts.searchPlaceholder || 'Search…';
+      card.insertBefore(input, tbl);
+      input.addEventListener('input', function() {
+        applyFilter(tbl, input.value, getActivePill(card));
+      });
+    }
+
+    // Filter pills
+    if (opts.pills) {
+      var bar = document.createElement('div');
+      bar.className = 'filter-pills';
+      opts.pills.forEach(function(label) {
+        var btn = document.createElement('button');
+        btn.className = 'filter-pill' + (label === 'All' ? ' active' : '');
+        btn.textContent = label;
+        btn.addEventListener('click', function() {
+          bar.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+          btn.classList.add('active');
+          var searchEl = card.querySelector('.table-search');
+          applyFilter(tbl, searchEl ? searchEl.value : '', label === 'All' ? null : label);
+        });
+        bar.appendChild(btn);
+      });
+      var after = card.querySelector('.table-search');
+      if (after) after.parentNode.insertBefore(bar, after.nextSibling);
+      else card.insertBefore(bar, tbl);
+    }
+
+    // Sortable headers
+    if (opts.sort) {
+      var headers = tbl.querySelectorAll('thead th');
+      var sortState = { col: -1, dir: 0 };
+      // Snapshot original order (data rows only, with associated drilldown rows)
+      var origOrder = [];
+      var dataRows = tbl.querySelectorAll('tbody > tr:not(.drilldown-row)');
+      dataRows.forEach(function(r) {
+        var pair = [r];
+        var nxt = r.nextElementSibling;
+        if (nxt && nxt.classList.contains('drilldown-row')) pair.push(nxt);
+        origOrder.push(pair);
+      });
+
+      // Find the first sortable column for default sort
+      var defaultSortCol = 0;
+      if (opts.sortExclude) {
+        for (var sc = 0; sc < headers.length; sc++) {
+          if (opts.sortExclude.indexOf(sc) === -1) { defaultSortCol = sc; break; }
+        }
+      }
+
+      headers.forEach(function(th, ci) {
+        if (opts.sortExclude && opts.sortExclude.indexOf(ci) !== -1) return;
+        th.classList.add('sortable-th');
+        var arrow = document.createElement('span');
+        arrow.className = 'sort-arrow';
+        th.appendChild(arrow);
+
+        th.addEventListener('click', function() {
+          doSort(ci);
+        });
+      });
+
+      function doSort(ci) {
+        var tbody = tbl.querySelector('tbody');
+        // Reset all arrows
+        headers.forEach(function(h) {
+          var a = h.querySelector('.sort-arrow');
+          if (a) a.textContent = '';
+          h.classList.remove('sort-asc', 'sort-desc');
+        });
+
+        if (sortState.col === ci) {
+          sortState.dir = (sortState.dir + 1) % 3;
+        } else {
+          sortState.col = ci;
+          sortState.dir = 1;
+        }
+
+        if (sortState.dir === 0) {
+          // Restore original
+          origOrder.forEach(function(pair) {
+            pair.forEach(function(r) { tbody.appendChild(r); });
+          });
+          return;
+        }
+
+        var arrow = headers[ci].querySelector('.sort-arrow');
+        if (arrow) arrow.textContent = sortState.dir === 1 ? ' ▲' : ' ▼';
+        headers[ci].classList.add(sortState.dir === 1 ? 'sort-asc' : 'sort-desc');
+
+        // Collect current data rows with their drilldown pairs
+        var pairs = [];
+        var drs = tbl.querySelectorAll('tbody > tr:not(.drilldown-row):not(.res-detail-row)');
+        drs.forEach(function(r) {
+          var p = [r];
+          var n = r.nextElementSibling;
+          while (n && (n.classList.contains('drilldown-row') || n.classList.contains('res-detail-row'))) {
+            p.push(n);
+            n = n.nextElementSibling;
+          }
+          pairs.push(p);
+        });
+
+        pairs.sort(function(a, b) {
+          var aVal = a[0].cells[ci] ? a[0].cells[ci].textContent.trim().replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}▶◀●]/gu, '').trim() : '';
+          var bVal = b[0].cells[ci] ? b[0].cells[ci].textContent.trim().replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}▶◀●]/gu, '').trim() : '';
+          var aNum = parseFloat(aVal.replace(/[^0-9.\-]/g, ''));
+          var bNum = parseFloat(bVal.replace(/[^0-9.\-]/g, ''));
+          var cmp;
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            cmp = aNum - bNum;
+          } else {
+            cmp = aVal.localeCompare(bVal);
+          }
+          return sortState.dir === 1 ? cmp : -cmp;
+        });
+
+        pairs.forEach(function(p) {
+          p.forEach(function(r) { tbody.appendChild(r); });
+        });
+      }
+
+      // Apply default alphabetical sort (ascending on first sortable column)
+      doSort(defaultSortCol);
+    }
+  }
+
+  function getActivePill(card) {
+    var active = card.querySelector('.filter-pill.active');
+    if (!active || active.textContent === 'All') return null;
+    return active.textContent;
+  }
+
+  function applyFilter(tbl, search, pillFilter) {
+    var q = (search || '').toLowerCase();
+    var rows = tbl.querySelectorAll('tbody > tr');
+    var visible = 0;
+    rows.forEach(function(row) {
+      if (row.classList.contains('drilldown-row') || row.classList.contains('res-detail-row')) return;
+      var text = row.textContent.toLowerCase();
+      var matchSearch = !q || text.indexOf(q) !== -1;
+      var matchPill = !pillFilter || text.indexOf(pillFilter.toLowerCase()) !== -1;
+      var show = matchSearch && matchPill;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+      // Hide/show associated drilldown row
+      var nxt = row.nextElementSibling;
+      if (nxt && nxt.classList.contains('drilldown-row')) {
+        if (!show) {
+          nxt.style.display = 'none';
+          nxt.classList.remove('active');
+          row.classList.remove('expanded');
+        } else {
+          nxt.style.display = '';
+        }
+      }
+    });
+    // Update result count if present
+    var counter = tbl.closest('.card').querySelector('.table-result-count');
+    if (counter) {
+      var total = tbl.querySelectorAll('tbody > tr:not(.drilldown-row):not(.res-detail-row)').length;
+      counter.textContent = visible === total ? total + ' rows' : visible + ' of ' + total + ' rows';
+    }
+  }
+
+  // Initialize tables with sort & filter
+  initTableFeatures('env-table', {
+    search: true,
+    searchPlaceholder: '🔍 Filter environments…',
+    sort: true,
+    sortExclude: [5],
+    pills: ['All', 'Sandbox', 'Developer', 'Production', 'Default']
+  });
+  initTableFeatures('recent-table', {
+    search: true,
+    searchPlaceholder: '🔍 Search resources…',
+    sort: true
+  });
+  initTableFeatures('rec-table', {
+    sort: true
+  });
+  initTableFeatures('storage-table', {
+    search: true,
+    searchPlaceholder: '🔍 Filter environments…',
+    sort: true,
+    sortExclude: []
+  });
+  initTableFeatures('licensing-table', {
+    sort: true
+  });
+  initTableFeatures('license-users-table', {
+    search: true,
+    searchPlaceholder: '🔍 Search users…',
+    sort: true
+  });
+
+  // Build flat all-resources table
+  (function() {
+    var card = document.getElementById('all-resources-card');
+    if (!card) return;
+
+    var all = [];
+    Object.keys(envResources).forEach(function(env) {
+      envResources[env].forEach(function(r) {
+        all.push({ name: r[0], type: r[1], created: r[2], modified: r[3], creator: r[4], status: r[5], desc: r[6], env: env });
+      });
+    });
+    all.sort(function(a, b) { return b.created.localeCompare(a.created); });
+
+    var h = '<table id="all-resources-table"><thead><tr>';
+    h += '<th style="width:28px"></th><th>Name</th><th>Type</th><th>Environment</th><th>Creator</th><th>Status</th><th>Created</th>';
+    h += '</tr></thead><tbody>';
+
+    all.forEach(function(r, i) {
+      var t = typeMap[r.type] || { label: r.type, icon: '📄' };
+      var sc = r.status === 'Published' ? 'badge-success' : r.status === 'Active' ? 'badge-info' : r.status === 'Draft' ? 'badge-warning' : 'badge-critical';
+      var rid = genId(r.name + r.env);
+
+      h += '<tr class="env-row" onclick="toggleResDetail(\'rd-' + i + '\',this)">';
+      h += '<td><span class="env-chevron">▶</span></td>';
+      h += '<td>' + t.icon + ' ' + escHtml(r.name) + '</td>';
+      h += '<td><span class="resource-type-pill">' + escHtml(t.label) + '</span></td>';
+      h += '<td>' + escHtml(r.env) + '</td>';
+      h += '<td>' + escHtml(r.creator) + '</td>';
+      h += '<td><span class="badge ' + sc + '">' + escHtml(r.status) + '</span></td>';
+      h += '<td>' + escHtml(r.created) + '</td>';
+      h += '</tr>';
+
+      h += '<tr class="drilldown-row" id="rd-' + i + '">';
+      h += '<td colspan="7" style="padding:0!important;border-bottom:2px solid var(--accent)!important;">';
+      h += '<div class="drilldown-panel" style="padding:16px 24px;">';
+      h += '<div class="detail-grid">';
+      [['Resource ID', rid], ['Display Name', r.name], ['Type', t.label], ['Environment', r.env],
+       ['Created', r.created], ['Modified', r.modified], ['Creator', r.creator], ['Status', r.status],
+       ['Description', r.desc]].forEach(function(d) {
+        h += '<span class="detail-label">' + d[0] + '</span><span class="detail-value">' + escHtml(d[1]) + '</span>';
+      });
+      h += '</div></div></td></tr>';
+    });
+
+    h += '</tbody></table>';
+    card.innerHTML = h;
+
+    var hdr = card.closest('.section').querySelector('h2');
+    if (hdr) hdr.textContent = 'All Resources (' + all.length + ' total)';
+
+    initTableFeatures('all-resources-table', {
+      search: true,
+      searchPlaceholder: '🔍 Search by name, type, environment, creator…',
+      sort: true,
+      sortExclude: [0]
+    });
+  })();
+});
 </script>
 </body>
 </html>

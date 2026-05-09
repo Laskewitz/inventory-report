@@ -40,9 +40,14 @@ Start with a brief overview:
 ## Power Platform Inventory Summary
 
 - **Environments**: X (Y production, Z sandbox, ...)
+- **Environment groups**: X
 - **Canvas apps**: X
 - **Model-driven apps**: X
+- **Code apps**: X (Y BYOC, Z Vibe)
+- **App Builder apps**: X
 - **Cloud flows**: X
+- **Agent flows**: X
+- **Workflow agent flows (M365)**: X
 - **Copilot Studio agents**: X
 - **DLP policies**: X
 

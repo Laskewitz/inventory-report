@@ -50,11 +50,12 @@ Every report **must** include a working dark/light mode toggle. This is non-nego
 
 The HTML report must include:
 
-   - A hero section with headline stats (total apps, flows, agents, environments)
+   - A hero section with headline stats covering **all resource types**: Canvas Apps, Model-Driven Apps, Code Apps, App Builder Apps, Cloud Flows, Agent Flows, Workflow Agent Flows (M365), Copilot Studio Agents, Environments, and Environment Groups
    - A **health score** or risk summary (critical / warning / healthy counts)
    - A breakdown by resource type (charts or styled tables)
    - An environment-by-environment breakdown showing each environment's name, type, region, managed status, and its resource counts
    - A timeline of recently created or modified resources
+   - Dedicated sections or sub-tabs for **each resource type** (Canvas Apps, Model-Driven Apps, Code Apps, App Builder Apps, Cloud Flows, Agent Flows, Workflow Agent Flows, Copilot Studio Agents) showing resource-type-specific fields (e.g. `subType` for Code/App Builder apps, `orchestration`/`model`/`channels` for Copilot Studio agents, `workflowEntityId` for flows)
    - Filters or tabs for drilling into each resource type and each environment
    - A tenant governance section showing key tenant settings with **flagged issues and why they matter**
    - A DLP policy overview showing all policies, their environment scopes, connector classifications, and **coverage gaps**
