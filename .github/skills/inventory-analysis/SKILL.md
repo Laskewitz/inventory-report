@@ -23,8 +23,10 @@ For a polished HTML or PDF document to share with stakeholders, use the **invent
 1. **Collect tenant governance data** using Power Platform CLI (`pac admin list-tenant-settings`, `pac admin dlp-policy list/show`)
 2. **Query inventory data** using the Power Platform inventory API via Azure CLI or direct REST calls
 3. **Collect environment settings** using Power Platform CLI (`pac env list-settings`)
-4. **Analyze all output** — flag gaps, risks, and deviations from best practices
-5. **Present findings as structured markdown** directly in the conversation
+4. **Collect storage capacity data** using the Power Platform Admin API (`tenant-capacity-details` endpoint)
+5. **Collect licensing data** using Microsoft Graph (`subscribedSkus`) and Power Platform Admin API (capacity add-ons)
+6. **Analyze all output** — flag gaps, risks, and deviations from best practices
+7. **Present findings as structured markdown** directly in the conversation
 
 Follow the data collection, analysis, and report structure documented in [inventory-data.md](../inventory-report/inventory-data.md).
 
@@ -50,6 +52,8 @@ Start with a brief overview:
 - **Workflow agent flows (M365)**: X
 - **Copilot Studio agents**: X
 - **DLP policies**: X
+- **Storage**: X GB used / Y GB capacity (Z% utilization)
+- **Licenses**: X assigned / Y purchased (Z% utilization)
 
 **Overall health**: 🔴 X critical | 🟡 X warnings | 🟢 X healthy
 ```

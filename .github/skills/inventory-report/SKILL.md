@@ -22,8 +22,10 @@ For inline markdown output in GitHub Copilot CLI or Chat (no file output), use t
 1. **Collect tenant governance data** using Power Platform CLI (`pac admin list-tenant-settings`, `pac admin dlp-policy list/show`)
 2. **Query inventory data** using the Power Platform inventory API via Azure CLI or direct REST calls
 3. **Collect environment settings** using Power Platform CLI (`pac env list-settings`)
-4. **Analyze all output** — flag gaps, risks, and deviations from best practices
-5. **Invoke the frontend-design skill** to create a visually striking, self-contained HTML report from the data
+4. **Collect storage capacity data** using the Power Platform Admin API (`tenant-capacity-details` endpoint)
+5. **Collect licensing data** using Microsoft Graph (`subscribedSkus`) and Power Platform Admin API (capacity add-ons)
+6. **Analyze all output** — flag gaps, risks, and deviations from best practices
+7. **Invoke the frontend-design skill** to create a visually striking, self-contained HTML report from the data
 
 Follow the data collection, analysis, and report structure documented in [inventory-data.md](./inventory-data.md).
 
@@ -51,7 +53,6 @@ Every report **must** include a working dark/light mode toggle. This is non-nego
 The HTML report must include:
 
    - A hero section with headline stats covering **all resource types**: Canvas Apps, Model-Driven Apps, Code Apps, App Builder Apps, Cloud Flows, Agent Flows, Workflow Agent Flows (M365), Copilot Studio Agents, Environments, and Environment Groups
-   - A **health score** or risk summary (critical / warning / healthy counts)
    - A breakdown by resource type (charts or styled tables)
    - An environment-by-environment breakdown showing each environment's name, type, region, managed status, and its resource counts
    - A timeline of recently created or modified resources
@@ -60,11 +61,22 @@ The HTML report must include:
    - A tenant governance section showing key tenant settings with **flagged issues and why they matter**
    - A DLP policy overview showing all policies, their environment scopes, connector classifications, and **coverage gaps**
    - An environment settings section highlighting key configuration per environment with **flags for non-compliant settings**
+   - A **Storage** section showing:
+     - Tenant-level storage summary with stat cards for Database, File, Log, Total Used, Total Capacity, and Utilization %
+     - Per-environment storage breakdown table (sorted by total usage descending) with Database, File, Log, Total, and % of Tenant columns
+     - Flags for environments consuming disproportionate storage or tenant utilization above 80%
+     - Storage data is also shown per-environment in the environment deep-dive (as a collapsible section)
+   - A **Licensing** section showing:
+     - Overview stat cards for Total Licenses, Assigned, Available, and Utilization %
+     - License plan table with columns: Plan Name, Purchased, Assigned, Available, Utilization %, and Status (with color-coded badges for healthy/warning/critical)
+     - Capacity-based add-ons (AI Builder credits, Dataverse storage, Power Pages capacity) with utilization indicators
+     - Top license consumers table showing users with the most Power Platform licenses, their environments, and resource counts
+     - Flags for plans near capacity (>85%) or with significant unassigned licenses
    - A **Recommendations** section with prioritized next steps, each including:
      - What to fix
      - Why it needs to be fixed (the business/security/compliance risk)
      - How to fix it (specific pac CLI commands or admin center actions)
      - Priority level (Critical / High / Medium / Low)
-3. Create a timestamped output directory under `reports/` using the format `reports/YYYYMMDD/HHmm/` (e.g. `reports/20260413/1540/`). Save all report files there.
+3. Save the report under `reports/YYYYMMDD/` with the timestamp in the filename: `inventory-report-HHmm.html` (e.g. `reports/20260413/inventory-report-1540.html`).
 4. The report should be a single `.html` file that works offline with no external dependencies
 5. After saving the report, open it in the VS Code integrated browser by running the command `Browser: Open Integrated Browser` and navigating to the `file://` URL of the generated report

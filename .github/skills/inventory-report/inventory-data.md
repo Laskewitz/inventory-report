@@ -562,6 +562,114 @@ pac env list-settings --environment "<environment-id-or-url>" --filter "audit"
 
 Iterate through ALL environments and collect their settings. The command returns hundreds of settings — do NOT list them all in the report. Instead, analyze the output and only surface settings that represent a gap or risk. See the analysis section below for what to flag.
 
+### Step 9 — Collect storage capacity data
+
+Retrieve tenant-level and per-environment storage capacity using the Power Platform Admin API:
+
+```
+GET https://api.powerplatform.microsoft.com/api/v1.0/tenant-capacity-details
+```
+
+**Authentication**: Use a Bearer token with Power Platform admin privileges.
+
+**Response structure**:
+
+```json
+{
+  "value": [
+    {
+      "tenantId": "string",
+      "capacityType": "Database",
+      "totalCapacity": 30.0,
+      "usedCapacity": 12.4,
+      "availableCapacity": 17.6,
+      "environmentCapacities": [
+        {
+          "environmentId": "string",
+          "environmentName": "string",
+          "capacityType": "Database",
+          "totalCapacity": 5.0,
+          "usedCapacity": 3.24,
+          "availableCapacity": 1.76
+        }
+      ]
+    }
+  ]
+}
+```
+
+The response contains entries for each capacity type: **Database**, **File**, and **Log**. Each entry includes tenant-level totals and a breakdown per environment.
+
+**To get the Bearer token via Azure CLI**:
+
+```bash
+az account get-access-token --resource "https://api.powerplatform.microsoft.com" --query accessToken -o tsv
+```
+
+Then call the API:
+
+```bash
+TOKEN=$(az account get-access-token --resource "https://api.powerplatform.microsoft.com" --query accessToken -o tsv)
+curl -s -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" \
+  "https://api.powerplatform.microsoft.com/api/v1.0/tenant-capacity-details"
+```
+
+For each capacity type (Database, File, Log), collect:
+- **Tenant level**: total capacity, used capacity, available capacity, utilization percentage
+- **Per environment**: environment name, used capacity per type, percentage of tenant total
+
+Include in the report:
+- Tenant-wide storage summary (total/used/available by type)
+- Per-environment storage breakdown table sorted by total usage descending
+- Utilization percentage for each environment
+- Flags for environments consuming disproportionate storage
+
+### Step 10 — Collect licensing data
+
+Retrieve tenant licensing and capacity add-on information. There is no single `pac` CLI command for this, so use the Power Platform Admin API and Microsoft Graph:
+
+#### 10a — Tenant capacity add-ons
+
+```
+GET https://api.powerplatform.microsoft.com/api/v1.0/capacity/add-ons
+```
+
+This returns purchased and consumed capacity for add-ons like:
+- Power Apps per-user / per-app plans
+- Power Automate per-user / per-flow plans
+- Copilot Studio sessions
+- AI Builder credits
+- Dataverse storage (Database, File, Log) add-ons
+- Power Pages capacity
+
+#### 10b — Microsoft 365 license assignments (via Microsoft Graph)
+
+To get license assignment data for users in the tenant:
+
+```bash
+az rest --method GET --url "https://graph.microsoft.com/v1.0/subscribedSkus" --headers "Content-Type=application/json"
+```
+
+This returns all subscribed SKUs (license plans) with:
+- `skuPartNumber` — license plan name
+- `prepaidUnits.enabled` — total purchased
+- `consumedUnits` — total assigned
+
+Filter for Power Platform-relevant SKUs:
+- `POWERAPPS_PER_USER` — Power Apps per User
+- `FLOW_PER_USER` — Power Automate per User
+- `POWERAPPS_PER_APP` — Power Apps per App
+- `POWER_AUTOMATE_FLOW` — Power Automate per Flow
+- `COPILOT_STUDIO` — Copilot Studio
+- `POWERAPPS_VIRAL` — Power Apps Developer
+- Other SKUs containing `POWER` or `FLOW`
+
+Include in the report:
+- License plan summary table (plan name, purchased, assigned, available, utilization %)
+- Capacity-based add-ons summary (AI Builder credits, storage, Power Pages capacity)
+- Top license consumers (users holding the most Power Platform licenses)
+- Flags for plans near capacity (>85% utilization) or with unassigned licenses
+
 ## Analyzing the data
 
 After collecting all data, analyze EVERY piece of output from the PAC commands and the inventory API. Do not just present raw data — interpret it, flag issues, explain WHY each issue matters, and provide actionable next steps.
